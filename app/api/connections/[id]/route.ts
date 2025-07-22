@@ -1,0 +1,37 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/app/api/utils/auth";
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const resourceId = searchParams.get("resource_id");
+    const resourceParam =
+      resourceId === "/" ? "" : `?resource_id=${resourceId}`;
+
+    const authToken = await auth();
+
+    const response = await fetch(
+      `${process.env.API_HOST}/connections/${id}/resources/children${resourceParam}`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching knowledge base resources:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch knowledge base resources" },
+      { status: 500 }
+    );
+  }
+}
