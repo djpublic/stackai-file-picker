@@ -1,12 +1,11 @@
 import * as React from "react";
-import { cn, getConnectionResourceUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { StatusIcon } from "../ui/status-icon";
 import { getFileIcon } from "../ui/file-icon";
 import { FileTreeItemProps } from "@/types/file-picker.types";
 import { useFilePickerStore } from "@/store/use-file-picker-store";
-import { useFetchResources } from "@/hooks/use-fetch-resource";
 
 export default function FileTreeItem({
   entry,
@@ -15,11 +14,14 @@ export default function FileTreeItem({
   toggleFolder,
   level = 0,
 }: FileTreeItemProps) {
-  const { selectedItems, toggleSelected } = useFilePickerStore();
+  const { selectedItems, toggleSelected, syncingItems, allSelectedDefault } =
+    useFilePickerStore();
   const { name, type, status, id } = entry;
-  const Icon = getFileIcon(name, type, false);
   const indexed = status === "indexed";
-  const selected = selectedItems.includes(id) || indexed;
+  const selected = selectedItems.includes(id);
+  const syncing = syncingItems.includes(id) || status === "indexing";
+  const Icon = getFileIcon(name, type, false);
+  const checked = allSelectedDefault ? indexed : selected;
 
   return (
     <tr
@@ -29,14 +31,16 @@ export default function FileTreeItem({
       )}
       role="treeitem"
       aria-expanded={isOpen}
-      aria-selected={selected}
+      aria-selected={checked ? "true" : "false"}
       aria-label={`${name} - ${status}`}
       data-id={id}
+      data-level={level}
     >
       {!viewOnly && (
         <td className="w-10 p-3 text-center">
           <Checkbox
-            defaultChecked={selected || indexed}
+            disabled={syncing}
+            checked={checked}
             onCheckedChange={(checkedState) => toggleSelected(id, checkedState)}
           />
         </td>
@@ -90,7 +94,7 @@ export default function FileTreeItem({
       >
         {type === "file" && (
           <div className="flex justify-end mr-4">
-            <StatusIcon status={status} indexed={indexed} />
+            <StatusIcon status={status} indexed={indexed} syncing={syncing} />
           </div>
         )}
       </td>

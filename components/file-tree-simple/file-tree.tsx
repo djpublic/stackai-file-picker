@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileTreeProps } from "@/types/file-picker.types";
 import { useFilePickerStore } from "@/store/use-file-picker-store";
-import { rootEntry } from "@/lib/utils";
+import { cn, rootEntry } from "@/lib/utils";
 import { FileTreeRowLoading } from "./loading/file-tree-row";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
@@ -14,12 +14,12 @@ export default function FileTree({
   viewOnly = false,
   resource,
   type,
+  disabled = false,
 }: FileTreeProps) {
-  const allSelected = useFilePickerStore((state) => state.allSelected);
-  const selectAll = useFilePickerStore((state) => state.selectAll);
+  const { allSelected, selectAll } = useFilePickerStore();
 
   const handleSelectAll = (newState: CheckedState) => {
-    const allItems = document.querySelectorAll("[data-id]");
+    const allItems = document.querySelectorAll("[data-id][data-level='1']");
     const ids = Array.from(allItems).map((item) =>
       item.getAttribute("data-id")
     );
@@ -29,14 +29,14 @@ export default function FileTree({
 
   return (
     <ScrollArea className="h-full max-h-[92%] w-full">
-      <div className="border rounded-xs">
+      <div className={cn("border rounded-xs", disabled && "opacity-50")}>
         <table className="w-full">
           <thead>
             <tr className="border-b bg-muted/70 text-sm">
               {!viewOnly && (
                 <th className="w-10 p-3 text-left">
                   <Checkbox
-                    defaultChecked={allSelected}
+                    checked={allSelected}
                     onCheckedChange={handleSelectAll}
                     className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                   />

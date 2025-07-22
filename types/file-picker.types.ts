@@ -96,6 +96,7 @@ export interface FileTreeProps {
   resource: FileTreeResourceProps;
   knowledgeBase?: KnowledgeBaseProps;
   type: ResourceType;
+  disabled?: boolean;
 }
 
 export interface FileTreeItemProps {
@@ -141,7 +142,7 @@ export interface FileTreeRowProps {
   type: ResourceType;
 }
 
-export interface FilePickerModalProps {
+export interface FilePickerContainerProps {
   open: boolean;
   onClose: () => void;
   onSelectFiles: (fileIds: string[]) => void;

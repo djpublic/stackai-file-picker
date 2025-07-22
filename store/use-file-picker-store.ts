@@ -1,18 +1,21 @@
-import { mergeItems, removeDuplicatedById } from "@/lib/utils";
-import {
-  FileTreeEntryProps,
-  KnowledgeBaseResponse,
-} from "@/types/file-picker.types";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { create } from "zustand";
+import { mergeItems, removeDuplicatedById } from "@/lib/utils";
+import { FileTreeEntryProps } from "@/types/file-picker.types";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 interface FilePickerStore {
   connectionFiles: FileTreeEntryProps[];
   updateConnectionFiles: (files: FileTreeEntryProps[]) => void;
-  selectedItems: string[];
-  allSelected: boolean;
+  allSelected: CheckedState;
+  allSelectedDefault: boolean;
   toggleSelected: (id: string, checked: CheckedState) => void;
   selectAll: (ids: string[], checked: CheckedState) => void;
+  syncingItems: string[];
+  expandedPaths: string[];
+  selectedItems: string[];
+  setSyncingItems: (ids: string[]) => void;
+  toggleExpandedPath: (path: string, expanded: boolean) => void;
+  closeAllExpandedPaths: () => void;
 }
 
 export const useFilePickerStore = create<FilePickerStore>((set) => ({
@@ -27,22 +30,40 @@ export const useFilePickerStore = create<FilePickerStore>((set) => ({
     }),
   selectedItems: [],
   allSelected: false,
+  allSelectedDefault: true,
+  syncingItems: [],
+  expandedPaths: [],
+  setSyncingItems: (ids: string[]) =>
+    set({
+      syncingItems: ids,
+    }),
   toggleSelected: (id: string, checked: CheckedState) =>
     set((state) => ({
+      allSelected: checked ? state.allSelected : false,
+      allSelectedDefault: false,
       selectedItems: checked
         ? [...state.selectedItems, id]
         : state.selectedItems.filter((file) => file !== id),
     })),
-  selectItems: (ids: string[]) =>
-    set((state) => ({
-      selectedItems: mergeItems(state.selectedItems, ids),
-    })),
   selectAll: (ids: string[], newState: CheckedState) => {
-    const nextState = newState === true ? true : false; // it can be indeterminate, so we ensure is false
+    set((state) => {
+      const previousState = !!state.allSelected;
 
-    set((state) => ({
-      selectedItems: !nextState ? [] : [...ids],
-      allSelected: nextState,
-    }));
+      return {
+        allSelected: newState,
+        selectedItems: !newState && previousState === true ? [] : [...ids],
+        allSelectedDefault: false,
+      };
+    });
   },
+  closeAllExpandedPaths: () =>
+    set({
+      expandedPaths: [],
+    }),
+  toggleExpandedPath: (path: string, expanded: boolean) =>
+    set((state) => ({
+      expandedPaths: expanded
+        ? [...state.expandedPaths, path]
+        : state.expandedPaths.filter((p) => p !== path),
+    })),
 }));

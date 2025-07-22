@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FileTreeRowProps } from "@/types/file-picker.types";
 import { FileTreeRowLoading } from "@/components/file-tree-simple/loading/file-tree-row";
 import FileTreeItem from "@/components/file-tree-simple/file-tree-item";
@@ -8,8 +8,7 @@ import {
   getConnectionResourceUrl,
   sortFilesAndFolders,
 } from "@/lib/utils";
-
-const REFRESH_PENDING_INTERVAL = 2000;
+import { useFilePickerStore } from "@/store/use-file-picker-store";
 
 export default function FileTreeRow({
   type,
@@ -20,25 +19,24 @@ export default function FileTreeRow({
   level = 0,
   resource,
 }: FileTreeRowProps) {
-  const [refresh, setRefresh] = useState("");
-  const [isOpen, setIsOpen] = useState(expanded);
+  const { toggleExpandedPath, expandedPaths } = useFilePickerStore();
+  const isOpen = expandedPaths.includes(entry.path) || expanded;
+  const shouldLoadResource = type !== "knowledge-base";
+
   // Sync status in Knowledge Base
   const { data: kbFolderData, isLoading: isKbLoading } = useFetchResources(
     getConnectionResourceUrl(resource, entry.path, "knowledge-base"),
-    isOpen,
-    refresh
+    isOpen
   );
 
-  const shouldLoadResource = type !== "knowledge-base";
   const { data: folderData, isLoading } = useFetchResources(
     getConnectionResourceUrl(resource, entry.id, "connection-resource"),
-    isOpen && shouldLoadResource,
-    refresh
+    isOpen && shouldLoadResource
   );
 
-  const toggleFolder = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleFolder = useCallback(() => {
+    toggleExpandedPath(entry.path, !isOpen);
+  }, [entry.path, isOpen, toggleExpandedPath]);
 
   const loading = isLoading || isKbLoading;
 
@@ -48,12 +46,6 @@ export default function FileTreeRow({
           enhanceItems(type, kbFolderData?.normalized, folderData?.normalized)
         )
       : [];
-
-  const hasPendingItems = items.some((item) =>
-    ["pending", "indexing"].includes(item.status)
-  );
-
-  const showLoaders = loading && !hasPendingItems;
 
   const renderChildren = items.map((item) => {
     return (
@@ -68,21 +60,10 @@ export default function FileTreeRow({
     );
   });
 
-  // If this row has pending items, schedule a refresh every 2 seconds
-  useEffect(() => {
-    if (!hasPendingItems) return;
-
-    const interval = setInterval(() => {
-      setRefresh(Date.now().toString());
-    }, REFRESH_PENDING_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [items]);
-
   if (isRoot) {
     return (
       <>
-        {showLoaders && <FileTreeRowLoading />}
+        {loading && <FileTreeRowLoading />}
         {renderChildren}
       </>
     );
@@ -98,7 +79,7 @@ export default function FileTreeRow({
         level={level}
       />
 
-      {showLoaders && <FileTreeRowLoading />}
+      {loading && <FileTreeRowLoading />}
       {renderChildren}
     </>
   );

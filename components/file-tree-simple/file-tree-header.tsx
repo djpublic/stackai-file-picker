@@ -5,22 +5,22 @@ import { toast } from "sonner";
 import { FileSymlink, RefreshCw } from "lucide-react";
 import { usePutKnowledgeBaseSync } from "@/hooks/use-put-knowledge-base-sync";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
-import { useEffect } from "react";
+import { useFilePickerStore } from "@/store/use-file-picker-store";
+import Image from "next/image";
 
 interface FileTreeHeaderProps {
-  forceSync?: boolean;
+  onUpdate?: () => void;
   isLoading?: boolean;
   onRefetch?: () => void;
-  onOpenFilePicker?: () => void;
 }
 
 export default function FileTreeHeader({
   onRefetch,
+  onUpdate,
   isLoading,
-  forceSync = false,
-  onOpenFilePicker,
 }: FileTreeHeaderProps) {
   const { knowledgeBase, indexedItems } = useKnowledgeBaseStore();
+  const selectedItems = useFilePickerStore((state) => state.selectedItems);
   const syncKbHandler = usePutKnowledgeBaseSync();
 
   const handleSync = async () => {
@@ -39,18 +39,23 @@ export default function FileTreeHeader({
     onRefetch();
   };
 
-  useEffect(() => {
-    if (forceSync) {
-      handleSync();
-    }
-  }, [forceSync]);
-
   return (
-    <div className="flex items-center justify-between mb-2">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
       <div>
-        <h2 className="text-xl font-bold">Indexed Resources</h2>
-        <p className="text-sm text-muted-foreground">
-          Files already indexed into your knowledge base.
+        <div className="flex items-center gap-3">
+          <Image
+            src="https://stack-us-east-1.onrender.com/integrations/gdrive/icon/icon.svg"
+            alt="" // Ignores from screen readers
+            className="h-6 w-6"
+            width={20}
+            height={20}
+          />
+          <span className="text-sm text-slate-600 dark:text-slate-400 font-bold">
+            Google Drive connection
+          </span>
+        </div>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+          Select the files you want to index from your Gdrive.
         </p>
       </div>
 
@@ -73,13 +78,13 @@ export default function FileTreeHeader({
         </Button>
 
         <Button
-          onClick={onOpenFilePicker}
+          onClick={onUpdate}
           size="lg"
-          disabled={isLoading}
-          className="gap-2 lg:w-40 cursor-pointer text-md"
+          disabled={isLoading || !selectedItems.length}
+          className="gap-2 cursor-pointer text-md"
         >
           <FileSymlink className="h-5 w-5" />
-          Change Files
+          Update {selectedItems.length} resources
         </Button>
       </div>
     </div>

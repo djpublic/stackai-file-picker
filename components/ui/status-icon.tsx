@@ -10,20 +10,22 @@ import { BadgeAlert, CloudCheck, CloudOff, RefreshCcwDot } from "lucide-react";
 function StatusIcon({
   status,
   indexed = false,
+  syncing = false,
 }: {
   status: string;
   indexed: boolean;
+  syncing: boolean;
 }) {
   let Icon = CloudOff;
   let tooltip = "Not Indexed";
-  const isIndexing = status === "indexing" || status === "pending";
+  const isIndexing = status === "indexing" || status === "pending" || syncing;
 
-  if (status === "indexed" || indexed) {
-    Icon = CloudCheck;
-    tooltip = "Indexed";
-  } else if (isIndexing) {
+  if (isIndexing) {
     Icon = RefreshCcwDot;
     tooltip = "Indexing";
+  } else if (status === "indexed" || indexed) {
+    Icon = CloudCheck;
+    tooltip = "Indexed";
   } else if (status === "not_indexed") {
     Icon = CloudOff;
     tooltip = "Not Indexed";
