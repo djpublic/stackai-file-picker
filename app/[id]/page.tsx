@@ -10,6 +10,7 @@ import FileTreeHeader from "@/components/file-tree-simple/file-tree-header";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
 import { FileTreeResourceProps } from "@/types/file-picker.types";
 import { toast } from "sonner";
+import FileTreeFooter from "@/components/file-tree-simple/file-tree-footer";
 
 export default function KnowledgeBase() {
   const [refetchKey, setRefetchKey] = useState("");
@@ -39,19 +40,16 @@ export default function KnowledgeBase() {
 
   return (
     <>
-      <PickerArea
-        onOpenFilePicker={() => setIsFilePickerOpen(!isFilePickerOpen)}
-        data={data?.normalized}
-        isLoading={isLoading}
-      />
+      <PickerArea data={data?.normalized} isLoading={isLoading} />
 
       <div className="lg:col-span-2 rounded-xl shadow flex flex-col gap-4 w-max-content p-4 w-full bg-white dark:bg-slate-800">
         <FileTreeHeader
           isLoading={isLoading}
           onRefetch={refreshKnowledgeBase}
+          onOpenFilePicker={() => setIsFilePickerOpen(!isFilePickerOpen)}
         />
 
-        <div className="flex flex-col h-[440px]">
+        <div className="flex flex-col">
           <FileTree
             viewOnly
             resource={resource}
@@ -59,6 +57,8 @@ export default function KnowledgeBase() {
             key="knowledge-base"
           />
         </div>
+
+        <FileTreeFooter isLoading={isLoading} />
       </div>
 
       <FilePickerModal
