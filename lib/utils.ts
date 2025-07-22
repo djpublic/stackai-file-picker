@@ -1,6 +1,7 @@
 import {
   FileTreeEntryProps,
   FileTreeResourceProps,
+  ResourceType,
 } from "@/types/file-picker.types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -73,5 +74,24 @@ export const formatDateTime = (date: string) => {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+  });
+};
+
+// This method combines the knowledge base folder information for indexing and the connection folder
+export const enhanceItems = (
+  type: ResourceType,
+  kbFolderData: FileTreeEntryProps[] = [],
+  connectionFolderData?: FileTreeEntryProps[]
+): FileTreeEntryProps[] => {
+  if (type === "knowledge-base") {
+    return kbFolderData;
+  }
+
+  return connectionFolderData?.map((item) => {
+    const syncItem = kbFolderData.find(
+      (syncItem) => syncItem.path === item.path
+    );
+
+    return { ...item, status: syncItem?.status };
   });
 };
