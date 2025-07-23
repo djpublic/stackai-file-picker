@@ -93,6 +93,7 @@ I did not have time to implement the filters and sorting, but I added the search
 - Checkboxes when selecting parent/children needs some improvements;
 - Some inconsistency with some React Query invalidations: Because I always need two API's to sync the files indexed, I had some challenges to invalidate the queries;
 - The API authentication method: I did not implement a cookie-based authentication, so for the purpose of this code challenge, all requests are making a new authentication in the BACKEND;
+- For some reason the file that ends as a `mp4` extension cannot be indexed, no matter how hard I tried.
 
 ### Usage of Hooks
 
