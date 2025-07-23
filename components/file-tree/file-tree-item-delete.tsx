@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { FileTreeEntryProps } from "@/types/file-picker.types";
 import { useDeleteKnowledgeBaseResource } from "@/hooks/use-delete-knowledge-base-resource";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
@@ -45,7 +45,11 @@ export function FileTreeItemDelete({ entry }: { entry: FileTreeEntryProps }) {
           className="cursor-pointer"
           disabled={isPending}
         >
-          <Trash2 className="w-2 h-2" />
+          {isPending ? (
+            <Loader2 className="w-2 h-2 animate-spin" />
+          ) : (
+            <Trash2 className="w-2 h-2" />
+          )}
           <span className="sr-only">Remove from knowledge base</span>
         </Button>
       </AlertDialogTrigger>

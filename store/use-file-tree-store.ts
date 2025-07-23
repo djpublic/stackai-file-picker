@@ -73,7 +73,7 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
     })),
   calculateAllSelected: () =>
     set((state) => {
-      // Get all available items from DOM
+      // Get only level 1 items for main checkbox calculation
       const allElements = document.querySelectorAll(
         '[data-id][data-level="1"]'
       );
@@ -81,7 +81,7 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
         .map((el) => el.getAttribute("data-id"))
         .filter(Boolean) as string[];
 
-      // Check if all available items are selected
+      // Check if all level 1 items are selected
       const allSelected =
         allAvailableIds.length > 0 &&
         allAvailableIds.every((id) => state.selectedItems.includes(id));
