@@ -17,17 +17,21 @@ export default function FileTreeItem({
   level = 0,
   parentId,
 }: FileTreeItemProps) {
-  const { selectedItems, syncingItems, allSelectedDefault } =
+  const { isSelected, syncingItems, allSelectedDefault, allSelected } =
     useFileTreeStore();
 
   const { name, type, status, id } = entry;
   const indexed = status === "indexed";
-  const selected = selectedItems.includes(id);
+  const selected = isSelected(id);
   const syncing = syncingItems.includes(id) || status === "indexing";
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
   const canDelete = type === "file" && indexed && !syncing;
   const rowRef = React.useRef<HTMLTableRowElement>(null);
+
+  // Add opacity to nested checkboxes when main selector is checked
+  const isNestedItem = level >= 2;
+  const shouldShowOpacity = allSelected && isNestedItem;
 
   // Use the smart selection hook
   const { handleSelection } = useSmartSelection({ entry, parentId });
@@ -60,14 +64,22 @@ export default function FileTreeItem({
           disabled={syncing}
           checked={checked}
           onCheckedChange={(checkedState) => handleSelection(!!checkedState)}
+          className={cn(shouldShowOpacity && "opacity-50")}
         />
       </td>
 
       <td
         className="p-3 pl-0 min-w-0 cursor-pointer hover:bg-muted/30 transition-colors"
-        onClick={() => {
+        onClick={(e) => {
+          // Prevent double execution by checking if click originated from checkbox
+          if ((e.target as HTMLElement).closest('[role="checkbox"]')) {
+            return;
+          }
+
           if (type === "directory") {
-            return toggleFolder();
+            e.stopPropagation();
+            toggleFolder();
+            return;
           }
 
           handleSelection(!selected);
@@ -79,10 +91,6 @@ export default function FileTreeItem({
         >
           {type === "directory" ? (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFolder();
-              }}
               className="flex items-center justify-center w-4 h-4 hover:bg-muted rounded-sm transition-colors flex-shrink-0 cursor-pointer"
               tabIndex={0}
               aria-label={`${true ? "Collapse" : "Expand"} folder ABD`}

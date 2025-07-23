@@ -38,10 +38,10 @@ const getDirectoryDescendants = (currentElement: Element): string[] => {
  */
 const isItemChecked = (
   itemId: string,
-  selectedItems: string[],
+  isSelected: (id: string) => boolean,
   allSelectedDefault: boolean
 ): boolean => {
-  return allSelectedDefault || selectedItems.includes(itemId);
+  return allSelectedDefault || isSelected(itemId);
 };
 
 /**
@@ -64,7 +64,7 @@ export const useSmartSelection = ({
   parentId,
 }: UseSmartSelectionProps) => {
   const {
-    selectedItems,
+    isSelected,
     toggleSelected,
     selectAll,
     allSelectedDefault,
@@ -83,9 +83,23 @@ export const useSmartSelection = ({
 
       const descendants = getDirectoryDescendants(currentElement);
       const allIds = [id, ...descendants];
-      selectAll(allIds, checkedState);
+
+      // Convert to SelectedItem objects with parentId information
+      const items = allIds.map((itemId) => {
+        // For the directory itself, use its parentId
+        if (itemId === id) {
+          return { id: itemId, parentId };
+        }
+        // For descendants, we need to find their actual parentId from DOM
+        const element = document.querySelector(`[data-id="${itemId}"]`);
+        const itemParentId =
+          element?.getAttribute("data-parent-id") || undefined;
+        return { id: itemId, parentId: itemParentId };
+      });
+
+      selectAll(items, checkedState);
     },
-    [id, selectAll]
+    [id, parentId, selectAll]
   );
 
   /**
@@ -93,9 +107,9 @@ export const useSmartSelection = ({
    */
   const handleFileSelection = useCallback(
     (checkedState: boolean) => {
-      toggleSelected(id, checkedState);
+      toggleSelected(id, parentId, checkedState);
     },
-    [id, toggleSelected]
+    [id, parentId, toggleSelected]
   );
 
   /**
@@ -108,7 +122,7 @@ export const useSmartSelection = ({
 
       const parentIsChecked = isItemChecked(
         parentId,
-        selectedItems,
+        isSelected,
         allSelectedDefault
       );
 
@@ -118,14 +132,19 @@ export const useSmartSelection = ({
       const parentLevel = getElementLevel(parentId);
       const currentLevel = getElementLevel(id);
 
+      // Get the parent's parentId from DOM
+      const parentElement = document.querySelector(`[data-id="${parentId}"]`);
+      const grandParentId =
+        parentElement?.getAttribute("data-parent-id") || undefined;
+
       // Uncheck the parent
-      toggleSelected(parentId, false);
+      toggleSelected(parentId, grandParentId, false);
 
       // Return true if this should trigger main selector update
       // (only when a level 2 item unchecks a level 1 parent)
       return parentLevel === "1" && currentLevel === "2";
     },
-    [parentId, selectedItems, allSelectedDefault, toggleSelected, id]
+    [parentId, isSelected, allSelectedDefault, toggleSelected, id]
   );
 
   /**
@@ -141,15 +160,7 @@ export const useSmartSelection = ({
       }
 
       // Handle parent unchecking and check if main selector should update
-      const willUpdateMainSelector = handleParentUnchecking(checkedState);
-
-      // Update main selector for level 1 items or when level 2 unchecks level 1 parent
-      const shouldUpdateMainSelector =
-        isLevel1Item(parentId) || willUpdateMainSelector;
-
-      if (shouldUpdateMainSelector) {
-        setTimeout(() => calculateAllSelected(), 0);
-      }
+      handleParentUnchecking(checkedState);
     },
     [
       type,
@@ -157,7 +168,6 @@ export const useSmartSelection = ({
       handleFileSelection,
       handleParentUnchecking,
       parentId,
-      calculateAllSelected,
     ]
   );
 

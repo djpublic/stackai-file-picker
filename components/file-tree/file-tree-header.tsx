@@ -37,7 +37,7 @@ export default function FileTreeHeader({
         </p>
       </div>
 
-      <div className="flex flex-row gap-2">
+      <div className="gap-2">
         <Button
           onClick={onUpdate}
           size="lg"

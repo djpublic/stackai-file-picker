@@ -4,19 +4,20 @@ import { toast } from "sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import { poolKbSyncPendingResources } from "../use-knowledge-base";
 import { cleanupSelectedItems } from "@/lib/utils";
+import { SelectedItemProps } from "@/types/file-picker.types";
 
 interface ProcessSyncParams {
   knowledgeBaseId: string;
   orgId: string;
   knowledgeBaseRawData: any;
-  selectedItems: string[];
+  selectedItems: SelectedItemProps[];
   putResourceIdsIntoKnowledgeBase: {
     mutateAsync: (params: { id: string; data: any }) => Promise<any>;
   };
   callSyncInKnowledgeBase: {
     mutateAsync: (params: { id: string; orgId: string }) => Promise<any>;
   };
-  setSyncingItems: (items: string[]) => void;
+  setSyncingItems: (items: SelectedItemProps[]) => void;
   queryClient: QueryClient;
 }
 
@@ -45,6 +46,11 @@ export function useProcessSync() {
 
       // Clean up selected items to remove redundant children when parent is selected
       const cleanedSelectedItems = cleanupSelectedItems(selectedItems);
+
+      if (cleanedSelectedItems.length === 0) {
+        toast.error("No files to sync");
+        return;
+      }
 
       // Do optimistic update for the indexing status
       setSyncingItems(selectedItems);
@@ -77,7 +83,12 @@ export function useProcessSync() {
 
       poolKbSyncPendingResources(queryClient);
 
-      setSyncingItems([]);
+      // Wait for 1 second to ensure the syncing items are set
+      // Invalidating queries are not sync.
+      setTimeout(() => {
+        toast.success("Files will reflect their state shortly");
+        setSyncingItems([]);
+      }, 5000);
     } catch (error: unknown) {
       toast.error(`Could not perform the sync operation: ${error}`);
       throw error; // Re-throw to allow caller to handle if needed

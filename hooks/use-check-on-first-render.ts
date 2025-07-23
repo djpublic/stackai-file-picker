@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
 
 interface UseCheckOnFirstRenderProps {
@@ -19,8 +19,22 @@ export const useCheckOnFirstRender = ({
   rowRef,
 }: UseCheckOnFirstRenderProps) => {
   const { toggleSelected } = useFileTreeStore();
+  const runRef = useRef(false);
 
   useEffect(() => {
+    // Only run once on mount, not on every state change
+    if (runRef.current) return;
+    runRef.current = true;
+
+    const itemChecked = rowRef?.current?.querySelector(
+      `button[data-state="checked"]`
+    );
+
+    // Already checked, avoid double toggleSelected
+    if (itemChecked) {
+      return;
+    }
+
     let parentChecked = false;
 
     const parent = rowRef?.current?.parentElement?.querySelector(
@@ -31,8 +45,8 @@ export const useCheckOnFirstRender = ({
       parentChecked = !!parent.querySelector("button[data-state='checked']");
     }
 
-    if (checked || parentChecked) {
-      toggleSelected(id, true);
+    if (checked || parentChecked || itemChecked) {
+      toggleSelected(id, parentId, true);
     }
-  }, [checked, id, toggleSelected, parentId, rowRef]);
+  }, [id, parentId, rowRef]);
 };

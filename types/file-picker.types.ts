@@ -177,3 +177,8 @@ export interface DeleteKnowledgeBaseResourceProps {
   knowledgeBaseId: string;
   path: string;
 }
+
+export interface SelectedItemProps {
+  id: string;
+  parentId: string | undefined;
+}

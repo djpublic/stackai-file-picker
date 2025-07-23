@@ -15,22 +15,23 @@ export default function FileTree({
   type,
   disabled = false,
 }: FileTreeProps) {
-  const { allSelected, selectAll, calculateAllSelected } = useFileTreeStore();
+  const { allSelected, selectAll } = useFileTreeStore();
   const tableRef = useRef<HTMLTableSectionElement>(null);
   const handleSelectAll = (newState: CheckedState) => {
     // Get ONLY level 1 items for main selector
-    const level1Items = tableRef.current?.querySelectorAll(
-      '[data-id][data-level="1"]'
-    );
-    const ids = Array.from(level1Items)
-      .map((item) => item.getAttribute("data-id"))
-      .filter(Boolean) as string[];
+    const level1Items = tableRef.current?.querySelectorAll("[data-id]");
+
+    // Convert to SelectedItem objects with parentId information
+    const items = Array.from(level1Items)
+      .map((item) => {
+        const id = item.getAttribute("data-id");
+        const parentId = item.getAttribute("data-parent-id") || undefined;
+        return id ? { id, parentId } : null;
+      })
+      .filter(Boolean) as { id: string; parentId: string | undefined }[];
 
     // Only select/unselect level 1 items when using main selector
-    selectAll(ids, newState);
-
-    // Update the main checkbox state after the action
-    setTimeout(() => calculateAllSelected(), 0);
+    selectAll(items, newState, true);
   };
 
   return (

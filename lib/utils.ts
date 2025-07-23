@@ -102,32 +102,22 @@ export const enhanceItems = (
  * @param selectedItems - Array of selected item paths
  * @returns Cleaned array without redundant child paths
  */
-export const cleanupSelectedItems = (selectedItems: string[]): string[] => {
-  if (selectedItems.length <= 1) {
-    return selectedItems;
-  }
+export const cleanupSelectedItems = (
+  selectedItems: { id: string; parentId: string | undefined }[]
+): string[] => {
+  const cleanedIds: string[] = [];
 
-  // Sort paths by length (parents come before children)
-  const sortedPaths = [...selectedItems].sort((a, b) => a.length - b.length);
-  const cleanedPaths: string[] = [];
+  for (const currentItem of selectedItems) {
+    // Check if any other selected item is a parent of currentItem
+    const hasParentSelected = selectedItems.some(
+      (potentialParent) => currentItem.parentId === potentialParent.id
+    );
 
-  for (const currentPath of sortedPaths) {
-    // Check if any existing path in cleanedPaths is a parent of currentPath
-    const hasParentSelected = cleanedPaths.some((parentPath) => {
-      // A path is a parent if:
-      // 1. currentPath starts with parentPath
-      // 2. The character after parentPath is '/' or currentPath equals parentPath
-      return (
-        currentPath.startsWith(parentPath) &&
-        (currentPath === parentPath || currentPath[parentPath.length] === "/")
-      );
-    });
-
-    // Only add if no parent is already selected
+    // Only add if no parent is selected
     if (!hasParentSelected) {
-      cleanedPaths.push(currentPath);
+      cleanedIds.push(currentItem.id);
     }
   }
 
-  return cleanedPaths;
+  return cleanedIds;
 };

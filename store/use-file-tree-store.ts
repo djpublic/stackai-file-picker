@@ -1,24 +1,35 @@
 import { create } from "zustand";
 import { removeDuplicatedById } from "@/lib/utils";
-import { FileTreeEntryProps } from "@/types/file-picker.types";
+import {
+  FileTreeEntryProps,
+  SelectedItemProps,
+} from "@/types/file-picker.types";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
 interface FilePickerStore {
   allSelected: CheckedState;
   allSelectedDefault: boolean;
-  toggleSelected: (id: string, checked: CheckedState) => void;
-  selectAll: (ids: string[], checked: CheckedState) => void;
+  toggleSelected: (
+    id: string,
+    parentId: string | undefined,
+    checked: CheckedState
+  ) => void;
+  selectAll: (
+    items: SelectedItemProps[],
+    checked: CheckedState,
+    forceCleanup?: boolean
+  ) => void;
   syncingItems: string[];
   expandedPaths: string[];
-  selectedItems: string[];
+  selectedItems: SelectedItemProps[];
   setSearch: (search: string) => void;
   search: string;
   setSyncingItems: (ids: string[]) => void;
   toggleExpandedPath: (path: string, expanded: boolean) => void;
-  calculateAllSelected: () => void;
+  isSelected: (id: string) => boolean;
 }
 
-export const useFileTreeStore = create<FilePickerStore>((set) => ({
+export const useFileTreeStore = create<FilePickerStore>((set, get) => ({
   selectedItems: [],
   allSelected: false,
   allSelectedDefault: true,
@@ -30,22 +41,54 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
     set({
       syncingItems: ids,
     }),
-  toggleSelected: (id: string, checked: CheckedState) =>
+  isSelected: (id: string) => {
+    const state = get();
+    return state.selectedItems.some(
+      (item) => item.id.toString() === id.toString()
+    );
+  },
+  toggleSelected: (
+    id: string,
+    parentId: string | undefined,
+    checked: CheckedState
+  ) =>
     set((state) => {
       const newSelectedItems = checked
-        ? [...state.selectedItems, id]
-        : state.selectedItems.filter((file) => file !== id);
+        ? [...state.selectedItems, { id, parentId }]
+        : state.selectedItems.filter((item) => item.id !== id);
 
       return {
         allSelectedDefault: false,
         selectedItems: newSelectedItems,
       };
     }),
-  selectAll: (ids: string[], newState: CheckedState) => {
+  selectAll: (
+    items: SelectedItemProps[],
+    newState: CheckedState,
+    forceCleanup: boolean = false
+  ) => {
     set((state) => {
+      if (forceCleanup) {
+        return {
+          allSelected: newState,
+          selectedItems: newState ? items : [],
+          allSelectedDefault: false,
+        };
+      }
+
       const newSelectedItems = newState
-        ? [...new Set([...state.selectedItems, ...ids])] // Merge and deduplicate
-        : state.selectedItems.filter((item) => !ids.includes(item)); // Remove specified ids
+        ? [
+            ...state.selectedItems,
+            ...items.filter(
+              (newItem) =>
+                !state.selectedItems.some(
+                  (existing) => existing.id === newItem.id
+                )
+            ),
+          ] // Merge and deduplicate
+        : state.selectedItems.filter(
+            (item) => !items.some((newItem) => newItem.id === item.id)
+          ); // Remove specified items
 
       return {
         selectedItems: newSelectedItems,
@@ -59,23 +102,4 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
         ? [...state.expandedPaths, path]
         : state.expandedPaths.filter((p) => p !== path),
     })),
-  calculateAllSelected: () =>
-    set((state) => {
-      // Get only level 1 items for main checkbox calculation
-      const allElements = document.querySelectorAll(
-        '[data-id][data-level="1"]'
-      );
-      const allAvailableIds = Array.from(allElements)
-        .map((el) => el.getAttribute("data-id"))
-        .filter(Boolean) as string[];
-
-      // Check if all level 1 items are selected
-      const allSelected =
-        allAvailableIds.length > 0 &&
-        allAvailableIds.every((id) => state.selectedItems.includes(id));
-
-      return {
-        allSelected,
-      };
-    }),
 }));
