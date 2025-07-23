@@ -9,14 +9,12 @@ interface FilePickerStore {
   toggleSelected: (id: string, checked: CheckedState) => void;
   selectAll: (ids: string[], checked: CheckedState) => void;
   syncingItems: string[];
-  hiddenItems: string[];
   expandedPaths: string[];
   selectedItems: string[];
   setSearch: (search: string) => void;
   search: string;
   setSyncingItems: (ids: string[]) => void;
   toggleExpandedPath: (path: string, expanded: boolean) => void;
-  toggleHidden: (id: string) => void;
   calculateAllSelected: () => void;
 }
 
@@ -26,7 +24,6 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
   allSelectedDefault: true,
   syncingItems: [],
   expandedPaths: [],
-  hiddenItems: [],
   search: "",
   setSearch: (search: string) => set({ search }),
   setSyncingItems: (ids: string[]) =>
@@ -44,15 +41,6 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
         selectedItems: newSelectedItems,
       };
     }),
-  toggleHidden: (id: string) =>
-    set((state) => ({
-      selectedItems: state.selectedItems.filter((item) => item !== id),
-      syncingItems: state.syncingItems.filter((item) => item !== id),
-      allSelectedDefault: false,
-      hiddenItems: state.hiddenItems.includes(id)
-        ? state.hiddenItems.filter((item) => item !== id)
-        : [...state.hiddenItems, id],
-    })),
   selectAll: (ids: string[], newState: CheckedState) => {
     set((state) => {
       const newSelectedItems = newState

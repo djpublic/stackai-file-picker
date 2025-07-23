@@ -17,22 +17,16 @@ export default function FileTreeItem({
   level = 0,
   parentId,
 }: FileTreeItemProps) {
-  const {
-    selectedItems,
-    syncingItems,
-    allSelectedDefault,
-    hiddenItems,
-    allSelected,
-  } = useFileTreeStore();
+  const { selectedItems, syncingItems, allSelectedDefault } =
+    useFileTreeStore();
 
   const { name, type, status, id } = entry;
   const indexed = status === "indexed";
-  const hidden = hiddenItems.includes(id);
   const selected = selectedItems.includes(id);
   const syncing = syncingItems.includes(id) || status === "indexing";
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
-  const canDelete = type === "file" && indexed && !hidden && !syncing;
+  const canDelete = type === "file" && indexed && !syncing;
   const rowRef = React.useRef<HTMLTableRowElement>(null);
 
   // Use the smart selection hook
@@ -109,12 +103,7 @@ export default function FileTreeItem({
             {name}
             <div className="w-4 h-4 flex-shrink-0" />
             {type === "file" && (
-              <StatusIcon
-                status={status}
-                indexed={indexed}
-                syncing={syncing}
-                hidden={hidden}
-              />
+              <StatusIcon status={status} indexed={indexed} syncing={syncing} />
             )}
           </span>
         </div>

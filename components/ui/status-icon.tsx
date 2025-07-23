@@ -11,23 +11,20 @@ function StatusIcon({
   status,
   indexed = false,
   syncing = false,
-  hidden = false,
 }: {
   status: string;
   indexed: boolean;
   syncing: boolean;
-  hidden: boolean;
 }) {
   let Icon = null;
   let tooltip = null;
 
-  const isIndexing =
-    !hidden && (status === "indexing" || status === "pending" || syncing);
+  const isIndexing = status === "indexing" || status === "pending" || syncing;
 
-  const isIndexed = !isIndexing && !hidden && (status === "indexed" || indexed);
+  const isIndexed = !isIndexing && (status === "indexed" || indexed);
 
   const isError =
-    (!hidden && !isIndexed && !isIndexing && status === "error") ||
+    (!isIndexed && !isIndexing && status === "error") ||
     status === "deleting_error";
 
   if (isIndexing) {
