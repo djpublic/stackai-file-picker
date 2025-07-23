@@ -29,10 +29,6 @@ export default function FileTreeItem({
   const canDelete = type === "file" && indexed && !syncing;
   const rowRef = React.useRef<HTMLTableRowElement>(null);
 
-  // Add opacity to nested checkboxes when main selector is checked
-  const isNestedItem = level >= 2;
-  const shouldShowOpacity = allSelected && isNestedItem;
-
   // Use the smart selection hook
   const { handleSelection } = useSmartSelection({ entry, parentId });
 
@@ -64,7 +60,6 @@ export default function FileTreeItem({
           disabled={syncing}
           checked={checked}
           onCheckedChange={(checkedState) => handleSelection(!!checkedState)}
-          className={cn(shouldShowOpacity && "opacity-50")}
         />
       </td>
 
