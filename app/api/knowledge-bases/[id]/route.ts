@@ -8,6 +8,7 @@ export async function GET(
   try {
     const { id } = await params;
     const authToken = await auth();
+
     const response = await fetch(
       `${process.env.API_HOST}/knowledge_bases/${id}`,
       {

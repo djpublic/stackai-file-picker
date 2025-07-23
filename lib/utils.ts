@@ -22,19 +22,20 @@ export function bytesToHumanReadable(bytes: number) {
 export const getConnectionResourceUrl = (
   resource: FileTreeResourceProps,
   path: string,
-  type: "knowledge-base" | "connection-resource"
+  type: "knowledge-base" | "connection-resource",
+  search?: string
 ) => {
   if (type === "knowledge-base") {
-    return `/api/knowledge-bases/${
+    let url = `/api/knowledge-bases/${
       resource.knowledgeBaseId
-    }/resources?resource_path=${encodeURIComponent(
-      `/${path === "/" ? "" : path}`
-    )}`;
+    }/resources?resource_path=%2F${path === "/" ? "" : path}`;
+
+    return url;
   }
 
   return `/api/connections/${
     resource.connectionId
-  }?resource_id=${encodeURIComponent(path)}`;
+  }?resource_id=${encodeURIComponent(path)}&search=${search}`;
 };
 
 export const sortFilesAndFolders = (items: FileTreeEntryProps[]) => {
@@ -54,13 +55,6 @@ export const removeDuplicatedById = (array: FileTreeEntryProps[]) => {
   return array.filter(
     (item, index, self) => self.findIndex((t) => t.id === item.id) === index
   );
-};
-
-export const combineIndexedAndSelected = (
-  indexedItems: string[],
-  selectedItems: string[]
-) => {
-  return [...indexedItems, ...selectedItems];
 };
 
 export const rootEntry = {
@@ -99,30 +93,4 @@ export const enhanceItems = (
 
     return { ...item, status: syncItem?.status };
   });
-};
-
-/**
- * Returns the directory path only.
- * If the input is a file in the root (e.g. "file.txt"), returns "/".
- * If the input is an empty string, returns "/".
- * If the input is a path, ensures it starts with "/".
- * If the input is a file in a subdirectory, returns its parent directory.
- */
-export const returnPathOnly = (path: string) => {
-  if (!path || path === "/") return "/";
-
-  // Remove leading slash for consistent splitting
-  const normalized = path.startsWith("/") ? path.slice(1) : path;
-
-  // If there's no slash, it's a file in the root
-  if (!normalized.includes("/")) return "/";
-
-  // Remove trailing slash if present
-  const trimmed = normalized.endsWith("/")
-    ? normalized.slice(0, -1)
-    : normalized;
-
-  // Get parent directory
-  const parent = trimmed.substring(0, trimmed.lastIndexOf("/"));
-  return parent ? `/${parent}` : "/";
 };

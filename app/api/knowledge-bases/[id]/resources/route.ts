@@ -9,17 +9,21 @@ export async function GET(
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const resourcePath = searchParams.get("resource_path");
+    const search = searchParams.get("search");
     const authToken = await auth();
+    const baseUrl = `${process.env.API_HOST}/knowledge_bases/${id}`;
 
-    const response = await fetch(
-      `${process.env.API_HOST}/knowledge_bases/${id}/resources/children?resource_path=${resourcePath}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const url =
+      search !== null
+        ? `${baseUrl}/search?search_query=${search}`
+        : `${baseUrl}/resources/children?resource_path=${resourcePath}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
 

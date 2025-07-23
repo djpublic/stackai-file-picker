@@ -14,6 +14,10 @@ interface FilePickerStore {
   hiddenItems: string[];
   expandedPaths: string[];
   selectedItems: string[];
+  setSearch: (search: string) => void;
+  search: string;
+  selectedFilter: string;
+  setSelectedFilter: (filter: string) => void;
   setSyncingItems: (ids: string[]) => void;
   toggleExpandedPath: (path: string, expanded: boolean) => void;
   closeAllExpandedPaths: () => void;
@@ -36,6 +40,10 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
   syncingItems: [],
   expandedPaths: [],
   hiddenItems: [],
+  search: "",
+  selectedFilter: "name-asc",
+  setSearch: (search: string) => set({ search }),
+  setSelectedFilter: (filter: string) => set({ selectedFilter: filter }),
   setSyncingItems: (ids: string[]) =>
     set({
       syncingItems: ids,

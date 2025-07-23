@@ -6,23 +6,28 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authToken = await auth();
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const resourceId = searchParams.get("resource_id");
+    const search = searchParams.get("search");
     const resourceParam =
       resourceId === "/" ? "" : `?resource_id=${resourceId}`;
 
-    const authToken = await auth();
+    let url = `${process.env.API_HOST}/connections/${id}/resources`;
 
-    const response = await fetch(
-      `${process.env.API_HOST}/connections/${id}/resources/children${resourceParam}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    if (search && resourceId === "/") {
+      url += `/search?query=${search}`;
+    } else {
+      url += `/children${resourceParam}`;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
 

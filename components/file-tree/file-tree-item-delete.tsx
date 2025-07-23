@@ -1,4 +1,4 @@
-import { SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -12,22 +12,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { Trash2 } from "lucide-react";
 import { FileTreeEntryProps } from "@/types/file-picker.types";
 import { useDeleteKnowledgeBaseResource } from "@/hooks/use-delete-knowledge-base-resource";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
 import { poolKbSyncPendingResources } from "@/hooks/use-knowledge-base";
-import { returnPathOnly } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
-export function FileTreeItemDelete({
-  entry,
-  onDelete,
-}: {
-  entry: FileTreeEntryProps;
-  onDelete: () => void;
-}) {
+export function FileTreeItemDelete({ entry }: { entry: FileTreeEntryProps }) {
   const { knowledgeBase } = useKnowledgeBaseStore();
   const { mutateAsync, isPending } = useDeleteKnowledgeBaseResource();
   const queryClient = useQueryClient();
@@ -40,7 +32,7 @@ export function FileTreeItemDelete({
       });
 
       poolKbSyncPendingResources(queryClient);
-    } catch (error) {
+    } catch {
       toast.error("Failed to de-index file. Try again.");
     }
   }, [entry.id, knowledgeBase.id]);

@@ -33,7 +33,7 @@ export default function FileTree({
       <div className={cn("border rounded-xs", disabled && "opacity-50")}>
         <table className="w-full">
           <thead>
-            <tr className="border-b bg-muted/70 text-sm h-20">
+            <tr className="border-b bg-muted/70 text-sm">
               <th className="w-10 p-3 text-left">
                 <Checkbox
                   checked={allSelected}

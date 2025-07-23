@@ -104,7 +104,6 @@ export interface FileTreeItemProps {
   entry: FileTreeEntryProps;
   isOpen: boolean;
   toggleFolder: () => void;
-  onDelete: () => void;
   level: number;
 }
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { StatusIcon } from "../ui/status-icon";
 import { getFileIcon } from "../ui/file-icon";
 import { FileTreeItemProps } from "@/types/file-picker.types";
@@ -13,7 +13,6 @@ export default function FileTreeItem({
   isOpen = false,
   toggleFolder,
   level = 0,
-  onDelete,
 }: FileTreeItemProps) {
   const {
     selectedItems,
@@ -37,7 +36,7 @@ export default function FileTreeItem({
     if (checked) {
       toggleSelected(id, true);
     }
-  }, []);
+  }, [checked, id, toggleSelected]);
 
   return (
     <tr
@@ -114,7 +113,7 @@ export default function FileTreeItem({
       <td className="p-3 cursor-pointer hover:bg-muted/30 transition-colors text-right">
         {canDelete && (
           <div className="flex justify-end mr-4">
-            <FileTreeItemDelete entry={entry} onDelete={onDelete} />
+            <FileTreeItemDelete entry={entry} />
           </div>
         )}
       </td>

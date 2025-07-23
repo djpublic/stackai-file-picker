@@ -14,6 +14,7 @@ import { usePutKnowledgeBaseSync } from "@/hooks/use-put-knowledge-base-sync";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { useProcessSync } from "@/hooks/sync/use-process-sync";
 import { useQueryClient } from "@tanstack/react-query";
+import FileTreeFilters from "@/components/file-tree/file-tree-filters";
 
 export default function KnowledgeBase() {
   const params = useParams();
@@ -76,17 +77,24 @@ export default function KnowledgeBase() {
     }
   }, [data, setKnowledgeBase]);
 
+  const handleFilterChange = (filter: string) => {
+    console.log(filter);
+  };
+
+  const handleSearchChange = (search: string) => {
+    console.log(search);
+  };
+
   return (
     <>
       <PageHeader title={data?.normalized?.name} isLoading={isLoading} />
 
       <div className="lg:col-span-2 rounded-xl shadow flex flex-col gap-4 w-max-content p-4 w-full bg-white dark:bg-slate-800">
         <FileTreeHeader isLoading={isLoading} onUpdate={handleProcessSync} />
-
+        <FileTreeFilters isLoading={isLoading} />
         <div className="flex flex-col">
           <FileTreeContainer loading={isLoading} />
         </div>
-
         <FileTreeFooter isLoading={isLoading} />
       </div>
     </>
