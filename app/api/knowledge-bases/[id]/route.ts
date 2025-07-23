@@ -37,7 +37,6 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-
     const authToken = await auth();
 
     const response = await fetch(

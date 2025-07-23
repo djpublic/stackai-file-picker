@@ -3,20 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { FileSymlink } from "lucide-react";
 
-import { useFilePickerStore } from "@/store/use-file-picker-store";
+import { useFileTreeStore } from "@/store/use-file-tree-store";
 import Image from "next/image";
 
 interface FileTreeHeaderProps {
   onUpdate?: () => void;
   isLoading?: boolean;
-  onRefetch?: () => void;
 }
 
 export default function FileTreeHeader({
   onUpdate,
   isLoading,
 }: FileTreeHeaderProps) {
-  const selectedItems = useFilePickerStore((state) => state.selectedItems);
+  const selectedItems = useFileTreeStore((state) => state.selectedItems);
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
@@ -46,7 +45,8 @@ export default function FileTreeHeader({
           className="gap-2 cursor-pointer text-md"
         >
           <FileSymlink className="h-5 w-5" />
-          Replace with {selectedItems.length} selected files
+          Replace with {selectedItems.length} selected file
+          {selectedItems.length === 1 ? "" : "s"}
         </Button>
       </div>
     </div>

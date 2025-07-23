@@ -12,6 +12,8 @@ export function cn(...inputs: ClassValue[]) {
 
 // create a bytes to human readable function
 export function bytesToHumanReadable(bytes: number) {
+  if (!bytes) return "0 KB";
+
   const units = ["B", "KB", "MB", "GB", "TB"];
   const index = Math.floor(Math.log(bytes) / Math.log(1024));
   return (bytes / Math.pow(1024, index)).toFixed(2) + " " + units[index];
@@ -55,9 +57,6 @@ export const combineIndexedAndSelected = (
   return [...indexedItems, ...selectedItems];
 };
 
-export const mergeItems = (itemsA: string[], itemsB: string[]) =>
-  removeDuplicated(combineIndexedAndSelected(itemsA, itemsB));
-
 export const rootEntry = {
   id: "/",
   name: "Root",
@@ -94,4 +93,30 @@ export const enhanceItems = (
 
     return { ...item, status: syncItem?.status };
   });
+};
+
+/**
+ * Returns the directory path only.
+ * If the input is a file in the root (e.g. "file.txt"), returns "/".
+ * If the input is an empty string, returns "/".
+ * If the input is a path, ensures it starts with "/".
+ * If the input is a file in a subdirectory, returns its parent directory.
+ */
+export const returnPathOnly = (path: string) => {
+  if (!path || path === "/") return "/";
+
+  // Remove leading slash for consistent splitting
+  const normalized = path.startsWith("/") ? path.slice(1) : path;
+
+  // If there's no slash, it's a file in the root
+  if (!normalized.includes("/")) return "/";
+
+  // Remove trailing slash if present
+  const trimmed = normalized.endsWith("/")
+    ? normalized.slice(0, -1)
+    : normalized;
+
+  // Get parent directory
+  const parent = trimmed.substring(0, trimmed.lastIndexOf("/"));
+  return parent ? `/${parent}` : "/";
 };

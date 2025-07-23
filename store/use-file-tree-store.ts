@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { mergeItems, removeDuplicatedById } from "@/lib/utils";
+import { removeDuplicatedById } from "@/lib/utils";
 import { FileTreeEntryProps } from "@/types/file-picker.types";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
@@ -11,14 +11,16 @@ interface FilePickerStore {
   toggleSelected: (id: string, checked: CheckedState) => void;
   selectAll: (ids: string[], checked: CheckedState) => void;
   syncingItems: string[];
+  hiddenItems: string[];
   expandedPaths: string[];
   selectedItems: string[];
   setSyncingItems: (ids: string[]) => void;
   toggleExpandedPath: (path: string, expanded: boolean) => void;
   closeAllExpandedPaths: () => void;
+  toggleHidden: (id: string) => void;
 }
 
-export const useFilePickerStore = create<FilePickerStore>((set) => ({
+export const useFileTreeStore = create<FilePickerStore>((set) => ({
   connectionFiles: [],
   updateConnectionFiles: (files: FileTreeEntryProps[]) =>
     set((state) => {
@@ -33,6 +35,7 @@ export const useFilePickerStore = create<FilePickerStore>((set) => ({
   allSelectedDefault: true,
   syncingItems: [],
   expandedPaths: [],
+  hiddenItems: [],
   setSyncingItems: (ids: string[]) =>
     set({
       syncingItems: ids,
@@ -44,6 +47,15 @@ export const useFilePickerStore = create<FilePickerStore>((set) => ({
       selectedItems: checked
         ? [...state.selectedItems, id]
         : state.selectedItems.filter((file) => file !== id),
+    })),
+  toggleHidden: (id: string) =>
+    set((state) => ({
+      selectedItems: state.selectedItems.filter((item) => item !== id),
+      syncingItems: state.syncingItems.filter((item) => item !== id),
+      allSelectedDefault: false,
+      hiddenItems: state.hiddenItems.includes(id)
+        ? state.hiddenItems.filter((item) => item !== id)
+        : [...state.hiddenItems, id],
     })),
   selectAll: (ids: string[], newState: CheckedState) => {
     set((state) => {

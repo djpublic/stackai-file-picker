@@ -1,3 +1,5 @@
+import { SetStateAction } from "react";
+
 export interface FileTreeResourceProps {
   knowledgeBaseId: string;
   orgId: string;
@@ -92,7 +94,6 @@ export interface KnowledgeBaseProps {
 }
 
 export interface FileTreeProps {
-  viewOnly?: boolean;
   resource: FileTreeResourceProps;
   knowledgeBase?: KnowledgeBaseProps;
   type: ResourceType;
@@ -101,9 +102,9 @@ export interface FileTreeProps {
 
 export interface FileTreeItemProps {
   entry: FileTreeEntryProps;
-  viewOnly: boolean;
   isOpen: boolean;
   toggleFolder: () => void;
+  onDelete: () => void;
   level: number;
 }
 
@@ -111,6 +112,9 @@ export type FileTreeEntryStatusProps =
   | "indexed"
   | "not_indexed"
   | "indexing"
+  | "deleting"
+  | "deleted"
+  | "deleting_error"
   | "pending"
   | "error";
 
@@ -135,7 +139,6 @@ export interface FileItemProps {
 export interface FileTreeRowProps {
   entry: FileTreeEntryProps;
   isRoot?: boolean;
-  viewOnly: boolean;
   expanded?: boolean;
   level?: number;
   resource: FileTreeResourceProps;
@@ -168,3 +171,8 @@ export interface KnowledgeBaseResponse {
 }
 
 export type ResourceType = "connection-resource" | "knowledge-base";
+
+export interface DeleteKnowledgeBaseResourceProps {
+  knowledgeBaseId: string;
+  path: string;
+}

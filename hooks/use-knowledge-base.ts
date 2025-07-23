@@ -54,63 +54,23 @@ export function useKnowledgeBase(
   });
 }
 
-export async function poolKbSyncPendingResources(
-  knowledgeBaseId: string,
-  path: string = "/",
-  notifier: any = null
-) {
-  let tries = 1;
-  const maxTries = 10;
+export function poolKbSyncPendingResources(queryClient: QueryClient) {
+  let tries = 0;
+  const maxTries = 3;
   const delay = 2000;
 
-  const getData = async (reject: any) => {
-    if (tries > maxTries) {
-      reject(new Error("Max tries reached. Please refresh the page."));
-      return;
-    }
+  const invalidate = async () => {
+    await queryClient.invalidateQueries({
+      predicate: () => true,
+      queryKey: ["connection-resources"],
+    });
 
-    try {
-      const queryClient = new QueryClient();
-      const url = getConnectionResourceUrl(
-        {
-          knowledgeBaseId: knowledgeBaseId,
-        } as FileTreeResourceProps,
-        path,
-        "knowledge-base"
-      );
+    if (tries < maxTries) {
+      tries++;
 
-      return await queryClient.fetchQuery({
-        queryKey: ["connection-resources", url],
-        queryFn: () => getConnectionResource(url),
-      });
-    } catch (error) {
-      notifier.error("Error fetching data. Please refresh the page.");
+      setTimeout(invalidate, delay);
     }
   };
 
-  const fetchData = async (resolve: any, reject: any) => {
-    notifier.info(
-      `Waiting for resources to be indexed (${tries}/${maxTries})`,
-      {
-        description: "We will notify you when it's done.",
-        duration: 5000,
-      }
-    );
-
-    const { data } = await getData(reject);
-
-    const hasPendingResources = data.some((item: any) =>
-      ["indexing", "pending"].includes(item.status)
-    );
-
-    if (!hasPendingResources) {
-      return resolve(true);
-    }
-
-    tries++;
-
-    setTimeout(() => fetchData(resolve, reject), delay);
-  };
-
-  return new Promise(fetchData);
+  invalidate();
 }

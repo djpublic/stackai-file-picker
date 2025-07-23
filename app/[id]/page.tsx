@@ -5,14 +5,15 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import PageHeader from "@/components/home/page-header";
 import { useKnowledgeBase } from "@/hooks/use-knowledge-base";
-import FileTreeHeader from "@/components/file-tree-simple/file-tree-header";
+import FileTreeHeader from "@/components/file-tree/file-tree-header";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
-import FileTreeFooter from "@/components/file-tree-simple/file-tree-footer";
-import FileTreeContainer from "@/components/file-picker/file-tree-container";
+import FileTreeFooter from "@/components/file-tree/file-tree-footer";
+import FileTreeContainer from "@/components/file-tree/file-tree-container";
 import { usePutKnowledgeBase } from "@/hooks/use-put-knowledge-base";
 import { usePutKnowledgeBaseSync } from "@/hooks/use-put-knowledge-base-sync";
-import { useFilePickerStore } from "@/store/use-file-picker-store";
+import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { useProcessSync } from "@/hooks/sync/use-process-sync";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function KnowledgeBase() {
   const params = useParams();
@@ -22,11 +23,12 @@ export default function KnowledgeBase() {
   const { setKnowledgeBase, knowledgeBase, knowledgeBaseRawData } =
     useKnowledgeBaseStore();
   const { selectedItems, setSyncingItems, closeAllExpandedPaths } =
-    useFilePickerStore();
+    useFileTreeStore();
 
   // Use the new mutation hooks
   const putResourceIdsIntoKnowledgeBase = usePutKnowledgeBase();
   const callSyncInKnowledgeBase = usePutKnowledgeBaseSync();
+  const queryClient = useQueryClient();
 
   // Use the extracted sync hook
   const processSync = useProcessSync();
@@ -54,6 +56,7 @@ export default function KnowledgeBase() {
       callSyncInKnowledgeBase,
       setSyncingItems,
       closeAllExpandedPaths,
+      queryClient,
     });
   }, [
     knowledgeBase,
@@ -64,6 +67,7 @@ export default function KnowledgeBase() {
     setSyncingItems,
     closeAllExpandedPaths,
     processSync,
+    queryClient,
   ]);
 
   useEffect(() => {
@@ -77,14 +81,10 @@ export default function KnowledgeBase() {
       <PageHeader title={data?.normalized?.name} isLoading={isLoading} />
 
       <div className="lg:col-span-2 rounded-xl shadow flex flex-col gap-4 w-max-content p-4 w-full bg-white dark:bg-slate-800">
-        <FileTreeHeader
-          isLoading={isLoading}
-          onRefetch={() => {}}
-          onUpdate={handleProcessSync}
-        />
+        <FileTreeHeader isLoading={isLoading} onUpdate={handleProcessSync} />
 
         <div className="flex flex-col">
-          <FileTreeContainer onSyncHandler={() => {}} loading={isLoading} />
+          <FileTreeContainer loading={isLoading} />
         </div>
 
         <FileTreeFooter isLoading={isLoading} />

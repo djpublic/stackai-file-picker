@@ -1,7 +1,8 @@
 "use client";
 
 import { toast } from "sonner";
-import { poolKbSyncPendingResources } from "@/hooks/use-knowledge-base";
+import type { QueryClient } from "@tanstack/react-query";
+import { poolKbSyncPendingResources } from "../use-knowledge-base";
 
 interface ProcessSyncParams {
   knowledgeBaseId: string;
@@ -16,6 +17,7 @@ interface ProcessSyncParams {
   };
   setSyncingItems: (items: string[]) => void;
   closeAllExpandedPaths: () => void;
+  queryClient: QueryClient;
 }
 
 /**
@@ -35,6 +37,7 @@ export function useProcessSync() {
       callSyncInKnowledgeBase,
       setSyncingItems,
       closeAllExpandedPaths,
+      queryClient,
     } = params;
 
     try {
@@ -73,13 +76,7 @@ export function useProcessSync() {
 
       toast.dismiss(syncId);
 
-      // Start a custom pooling to ensure /root has no pending/indexing resources anymore
-      await poolKbSyncPendingResources(knowledgeBaseId, "/", toast);
-
-      toast.success("All resources have been indexed successfully", {
-        duration: 30000,
-        closeButton: true,
-      });
+      poolKbSyncPendingResources(queryClient);
 
       setSyncingItems([]);
     } catch (error: unknown) {

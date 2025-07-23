@@ -14,8 +14,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             // Reduce background refetching for better performance
-            staleTime: 60 * 1000, // 1 minute
-            gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+            staleTime: 0, // 1 minute
+            gcTime: 0, // 10 minutes (previously cacheTime)
             retry: 1, // Only retry failed requests once
             refetchOnWindowFocus: true, // Refetch when user returns to tab
           },
@@ -32,7 +32,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       {children}
       {/* Show React Query DevTools in development */}
       {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ReactQueryDevtools initialIsOpen={true} />
       )}
     </QueryClientProvider>
   );

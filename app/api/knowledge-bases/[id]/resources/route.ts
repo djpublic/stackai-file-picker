@@ -8,8 +8,7 @@ export async function GET(
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const resourcePath = searchParams.get("resource_path");
-
+    const resourcePath = encodeURIComponent(searchParams.get("resource_path"));
     const authToken = await auth();
 
     const response = await fetch(

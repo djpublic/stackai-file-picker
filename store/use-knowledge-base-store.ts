@@ -1,5 +1,4 @@
 import { create } from "zustand";
-
 import {
   FileTreeEntryProps,
   KnowledgeBaseResponse,
@@ -8,7 +7,6 @@ import {
 interface KnowledgeBaseStore {
   indexedItems: string[];
   files: FileTreeEntryProps[];
-  setFiles: (files: FileTreeEntryProps[]) => void;
   knowledgeBase: KnowledgeBaseResponse["normalized"];
   knowledgeBaseRawData: KnowledgeBaseResponse["rawData"];
   setKnowledgeBase: (response: KnowledgeBaseResponse) => void;
@@ -17,7 +15,6 @@ interface KnowledgeBaseStore {
 export const useKnowledgeBaseStore = create<KnowledgeBaseStore>((set) => ({
   indexedItems: [],
   files: [],
-  setFiles: (files: FileTreeEntryProps[]) => set({ files }),
   knowledgeBase: null,
   knowledgeBaseRawData: null,
   setKnowledgeBase: (response: KnowledgeBaseResponse) =>

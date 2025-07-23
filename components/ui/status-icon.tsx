@@ -11,27 +11,37 @@ function StatusIcon({
   status,
   indexed = false,
   syncing = false,
+  hidden = false,
 }: {
   status: string;
   indexed: boolean;
   syncing: boolean;
+  hidden: boolean;
 }) {
-  let Icon = CloudOff;
-  let tooltip = "Not Indexed";
-  const isIndexing = status === "indexing" || status === "pending" || syncing;
+  let Icon = null;
+  let tooltip = null;
+
+  const isIndexing =
+    !hidden && (status === "indexing" || status === "pending" || syncing);
+
+  const isIndexed = !isIndexing && !hidden && (status === "indexed" || indexed);
+
+  const isError =
+    (!hidden && !isIndexed && !isIndexing && status === "error") ||
+    status === "deleting_error";
 
   if (isIndexing) {
     Icon = RefreshCw;
     tooltip = "Indexing";
-  } else if (status === "indexed" || indexed) {
+  } else if (isIndexed) {
     Icon = CloudCheck;
     tooltip = "Indexed";
-  } else if (status === "not_indexed") {
-    Icon = CloudOff;
-    tooltip = "Not Indexed";
-  } else if (status === "error") {
+  } else if (isError) {
     Icon = BadgeAlert;
     tooltip = "Error - Try syncing again";
+  } else {
+    Icon = CloudOff;
+    tooltip = "Not Indexed";
   }
 
   return (
