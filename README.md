@@ -54,19 +54,19 @@ As mentioned in the `.env.example`, you can grab the information to run the proj
 ##  UI/UX quality:
 
 - Does everything work as expected? Are there any console errors or broken features?
-  A: I believe what was requested is implemented. Console errors are empty. Broken features, should be ok.
+  - A: I believe what was requested is implemented. Console errors are empty. Broken features, should be ok.
 
 - Is it fast? Do you have to wait for the UI? Does it make good use of optimistic updates? Do you rollback on errors?
-  A: The API is slow for some operations, but it's using some UI/Skeleton techniques that helps with the user experience.
+  - A: The API is slow for some operations, but it's using some UI/Skeleton techniques that helps with the user experience.
 
 - Is it intuitive?
-  A: I believe so.
+  - A: I believe so.
 
 - Does it look visually appealing?
-  A: ¯\_(ツ)\_/¯
+  - A: ¯\_(ツ)\_/¯
 
 - Low Cumulative Layout Shift? Do things move around when clicking something (this is bad)?
-  A: I tried to have little CLS, but with the time I had, I think the UX is good.
+  - A: I tried to have little CLS, but with the time I had, I think the UX is good.
 
 ## 🔖 Deliverable:
 
