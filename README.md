@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stack AI - Take-at-Home Task - Frontend Engineer (KB)
 
-## Getting Started
+## Participant:
 
-First, run the development server:
+- Djalma Araújo (@djalmaaraujo)
+- Email: djalma.araujo@gmail.com
 
-```bash
+## How to run the project
+
+```
+git clone git@github.com:djalmaaraujo/stackai-file-picker.git
+cd stackai-file-picker
+npm install
+cp .env.example .env # Replace with real values
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚒️ **Tech Stack**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: React + Next.js (latest stable version)
+- **Data Fetching**: Tanstack Query + fetch
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS (latest stable version)
+- **Components library**: [Shadcn](https://ui.shadcn.com/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+##  UI/UX quality:
 
-## Learn More
+- Does everything work as expected? Are there any console errors or broken features?
+  A: I believe what was requested is implemented. Console errors are empty. Broken features, should be ok.
 
-To learn more about Next.js, take a look at the following resources:
+- Is it fast? Do you have to wait for the UI? Does it make good use of optimistic updates? Do you rollback on errors?
+  A: The API is slow for some operations, but it's using some UI/Skeleton techniques that helps with the user experience.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Is it intuitive?
+  A: I believe so.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Does it look visually appealing?
+  A: ¯\_(ツ)\_/¯
 
-## Deploy on Vercel
+- Low Cumulative Layout Shift? Do things move around when clicking something (this is bad)?
+  A: I tried to have little CLS, but with the time I had, I think the UX is good.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔖 Deliverable:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Source Code**: https://github.com/djalmaaraujo/stackai-file-picker
+2. **Live Demo**: A link to a live demo of the page **hosted on Vercel.**
+   1. **Demo video**: Sent over email (arosinol@stack-ai.com)
+   2. **Website link**: [https://stackai.djalmaaraujo.com/](https://stackai.djalmaaraujo.com/)
+3. **Documentation**: This file.
+
+## Technical choices
+
+The video has a good explanation of most features and decisions.
