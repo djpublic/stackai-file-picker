@@ -26,7 +26,7 @@ export const getConnectionResourceUrl = (
   search?: string
 ) => {
   if (type === "knowledge-base") {
-    let url = `/api/knowledge-bases/${
+    const url = `/api/knowledge-bases/${
       resource.knowledgeBaseId
     }/resources?resource_path=%2F${path === "/" ? "" : path}`;
 

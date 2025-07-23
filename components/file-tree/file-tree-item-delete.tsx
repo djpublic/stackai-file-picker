@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -24,7 +23,7 @@ export function FileTreeItemDelete({ entry }: { entry: FileTreeEntryProps }) {
   const { mutateAsync, isPending } = useDeleteKnowledgeBaseResource();
   const queryClient = useQueryClient();
 
-  const unsyncFile = useCallback(async () => {
+  const unsyncFile = async () => {
     try {
       await mutateAsync({
         knowledgeBaseId: knowledgeBase.id,
@@ -35,7 +34,7 @@ export function FileTreeItemDelete({ entry }: { entry: FileTreeEntryProps }) {
     } catch {
       toast.error("Failed to de-index file. Try again.");
     }
-  }, [entry.id, knowledgeBase.id]);
+  };
 
   return (
     <AlertDialog>
