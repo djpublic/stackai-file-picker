@@ -45,13 +45,6 @@ const isItemChecked = (
 };
 
 /**
- * Determines if this item is a level 1 item (top-level)
- */
-const isLevel1Item = (parentId?: string): boolean => {
-  return !parentId || parentId === "/";
-};
-
-/**
  * Gets the DOM level attribute for an element
  */
 const getElementLevel = (elementId: string): string | null => {

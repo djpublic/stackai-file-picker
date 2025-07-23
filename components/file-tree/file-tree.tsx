@@ -18,11 +18,9 @@ export default function FileTree({
   const { allSelected, selectAll } = useFileTreeStore();
   const tableRef = useRef<HTMLTableSectionElement>(null);
   const handleSelectAll = (newState: CheckedState) => {
-    // Get ONLY level 1 items for main selector
-    const level1Items = tableRef.current?.querySelectorAll("[data-id]");
+    const allItems = tableRef.current?.querySelectorAll("[data-id]");
 
-    // Convert to SelectedItem objects with parentId information
-    const items = Array.from(level1Items)
+    const items = Array.from(allItems)
       .map((item) => {
         const id = item.getAttribute("data-id");
         const parentId = item.getAttribute("data-parent-id") || undefined;
@@ -30,7 +28,6 @@ export default function FileTree({
       })
       .filter(Boolean) as { id: string; parentId: string | undefined }[];
 
-    // Only select/unselect level 1 items when using main selector
     selectAll(items, newState, true);
   };
 

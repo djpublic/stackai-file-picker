@@ -84,7 +84,7 @@ export default function FileTreeHeader({
             onClick={onUpdate}
             size="lg"
             disabled={isLoading}
-            className="gap-2 cursor-pointer text-md shadow-lg border border-border"
+            className="gap-2 cursor-pointer text-md shadow-lg border border-border h-15 px-4"
           >
             {buttonContent}
           </Button>
