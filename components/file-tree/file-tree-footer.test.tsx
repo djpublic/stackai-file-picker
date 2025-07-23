@@ -43,7 +43,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: null,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -64,7 +63,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: mockKnowledgeBase,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -90,7 +88,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: null,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -114,7 +111,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: mockKnowledgeBase,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -150,7 +146,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: mockKnowledgeBase,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -190,7 +185,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: mockKnowledgeBase,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });
@@ -208,7 +202,6 @@ describe("FileTreeFooter", () => {
     mockUseKnowledgeBaseStore.mockReturnValue({
       knowledgeBase: null,
       indexedItems: [],
-      files: [],
       knowledgeBaseRawData: null,
       setKnowledgeBase: jest.fn(),
     });

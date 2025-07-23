@@ -1,12 +1,8 @@
 import { create } from "zustand";
-import {
-  FileTreeEntryProps,
-  KnowledgeBaseResponse,
-} from "@/types/file-picker.types";
+import { KnowledgeBaseResponse } from "@/types/file-picker.types";
 
 interface KnowledgeBaseStore {
   indexedItems: string[];
-  files: FileTreeEntryProps[];
   knowledgeBase: KnowledgeBaseResponse["normalized"];
   knowledgeBaseRawData: KnowledgeBaseResponse["rawData"];
   setKnowledgeBase: (response: KnowledgeBaseResponse) => void;
@@ -14,7 +10,6 @@ interface KnowledgeBaseStore {
 
 export const useKnowledgeBaseStore = create<KnowledgeBaseStore>((set) => ({
   indexedItems: [],
-  files: [],
   knowledgeBase: null,
   knowledgeBaseRawData: null,
   setKnowledgeBase: (response: KnowledgeBaseResponse) =>
