@@ -3,18 +3,18 @@
 import { useCallback, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import PageHeader from "@/components/home/page-header";
-import { useKnowledgeBase } from "@/hooks/use-knowledge-base";
-import FileTreeHeader from "@/components/file-tree/file-tree-header";
+import { useQueryClient } from "@tanstack/react-query";
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
-import FileTreeFooter from "@/components/file-tree/file-tree-footer";
-import FileTreeContainer from "@/components/file-tree/file-tree-container";
+import { useFileTreeStore } from "@/store/use-file-tree-store";
+import { useKnowledgeBase } from "@/hooks/use-knowledge-base";
 import { usePutKnowledgeBase } from "@/hooks/use-put-knowledge-base";
 import { usePutKnowledgeBaseSync } from "@/hooks/use-put-knowledge-base-sync";
-import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { useProcessSync } from "@/hooks/sync/use-process-sync";
-import { useQueryClient } from "@tanstack/react-query";
+import PageHeader from "@/components/home/page-header";
+import FileTreeHeader from "@/components/file-tree/file-tree-header";
 import FileTreeFilters from "@/components/file-tree/file-tree-filters";
+import FileTreeContainer from "@/components/file-tree/file-tree-container";
+import FileTreeFooter from "@/components/file-tree/file-tree-footer";
 
 export default function KnowledgeBase() {
   const params = useParams();
@@ -23,8 +23,7 @@ export default function KnowledgeBase() {
 
   const { setKnowledgeBase, knowledgeBase, knowledgeBaseRawData } =
     useKnowledgeBaseStore();
-  const { selectedItems, setSyncingItems, closeAllExpandedPaths } =
-    useFileTreeStore();
+  const { selectedItems, setSyncingItems } = useFileTreeStore();
 
   // Use the new mutation hooks
   const putResourceIdsIntoKnowledgeBase = usePutKnowledgeBase();
@@ -56,7 +55,6 @@ export default function KnowledgeBase() {
       putResourceIdsIntoKnowledgeBase,
       callSyncInKnowledgeBase,
       setSyncingItems,
-      closeAllExpandedPaths,
       queryClient,
     });
   }, [
@@ -66,7 +64,6 @@ export default function KnowledgeBase() {
     putResourceIdsIntoKnowledgeBase,
     callSyncInKnowledgeBase,
     setSyncingItems,
-    closeAllExpandedPaths,
     processSync,
     queryClient,
   ]);
@@ -76,14 +73,6 @@ export default function KnowledgeBase() {
       setKnowledgeBase(data);
     }
   }, [data, setKnowledgeBase]);
-
-  const handleFilterChange = (filter: string) => {
-    console.log(filter);
-  };
-
-  const handleSearchChange = (search: string) => {
-    console.log(search);
-  };
 
   return (
     <>

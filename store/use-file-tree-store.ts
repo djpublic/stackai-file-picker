@@ -20,7 +20,6 @@ interface FilePickerStore {
   setSelectedFilter: (filter: string) => void;
   setSyncingItems: (ids: string[]) => void;
   toggleExpandedPath: (path: string, expanded: boolean) => void;
-  closeAllExpandedPaths: () => void;
   toggleHidden: (id: string) => void;
 }
 
@@ -76,10 +75,6 @@ export const useFileTreeStore = create<FilePickerStore>((set) => ({
       };
     });
   },
-  closeAllExpandedPaths: () =>
-    set({
-      expandedPaths: [],
-    }),
   toggleExpandedPath: (path: string, expanded: boolean) =>
     set((state) => ({
       expandedPaths: expanded

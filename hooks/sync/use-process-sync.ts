@@ -16,7 +16,6 @@ interface ProcessSyncParams {
     mutateAsync: (params: { id: string; orgId: string }) => Promise<any>;
   };
   setSyncingItems: (items: string[]) => void;
-  closeAllExpandedPaths: () => void;
   queryClient: QueryClient;
 }
 
@@ -36,7 +35,6 @@ export function useProcessSync() {
       putResourceIdsIntoKnowledgeBase,
       callSyncInKnowledgeBase,
       setSyncingItems,
-      closeAllExpandedPaths,
       queryClient,
     } = params;
 
@@ -46,9 +44,6 @@ export function useProcessSync() {
 
       // Do optimistic update for the indexing status
       setSyncingItems(selectedItems);
-
-      // Close all expanded paths to load root (Similar to current Stack AI app)
-      // closeAllExpandedPaths();
 
       // PUT /knowledge-base/{id} with the resource ids
       const kbUpdateId = toast.loading(`Adding files to knowledge base…`);
