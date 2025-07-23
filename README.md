@@ -137,13 +137,8 @@ The utility function `enhanceItems` then merges these two lists, marking which i
 
 #### Recommendations for Improvement
 
-- **Checkbox Hierarchy**: Improve parent/child checkbox logic so that selecting a parent folder properly selects/deselects all children, and partial selection is visually indicated.
 - **Pagination and Performance**: Add pagination or lazy loading for folders with many files to improve performance and usability.
-- **Error Handling**: Enhance error handling and user feedback, especially for API failures or sync issues.
 - **Sorting and Filtering**: Implement more advanced sorting and filtering options in the file tree UI.
-- **Testing**: Add more comprehensive tests for file tree logic, especially around merging and selection state.
-
-This approach provides a clear, maintainable way to present a unified file tree from two sources, but there is room for further polish and optimization as the project evolves.
 
 ### UI Decisions
 
