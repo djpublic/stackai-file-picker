@@ -25,10 +25,16 @@ export const getConnectionResourceUrl = (
   type: "knowledge-base" | "connection-resource"
 ) => {
   if (type === "knowledge-base") {
-    return `/api/knowledge-bases/${resource.knowledgeBaseId}/resources?resource_path=${path}`;
+    return `/api/knowledge-bases/${
+      resource.knowledgeBaseId
+    }/resources?resource_path=${encodeURIComponent(
+      `/${path === "/" ? "" : path}`
+    )}`;
   }
 
-  return `/api/connections/${resource.connectionId}?resource_id=${path}`;
+  return `/api/connections/${
+    resource.connectionId
+  }?resource_id=${encodeURIComponent(path)}`;
 };
 
 export const sortFilesAndFolders = (items: FileTreeEntryProps[]) => {

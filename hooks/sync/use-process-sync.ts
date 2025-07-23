@@ -48,7 +48,7 @@ export function useProcessSync() {
       setSyncingItems(selectedItems);
 
       // Close all expanded paths to load root (Similar to current Stack AI app)
-      closeAllExpandedPaths();
+      // closeAllExpandedPaths();
 
       // PUT /knowledge-base/{id} with the resource ids
       const kbUpdateId = toast.loading(`Adding files to knowledge base…`);

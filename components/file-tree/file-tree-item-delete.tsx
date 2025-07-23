@@ -29,7 +29,6 @@ export function FileTreeItemDelete({
   onDelete: () => void;
 }) {
   const { knowledgeBase } = useKnowledgeBaseStore();
-  const { setSyncingItems } = useFileTreeStore();
   const { mutateAsync, isPending } = useDeleteKnowledgeBaseResource();
   const queryClient = useQueryClient();
 

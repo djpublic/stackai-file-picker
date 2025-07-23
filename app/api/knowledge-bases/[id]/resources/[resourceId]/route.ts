@@ -11,11 +11,7 @@ export async function DELETE(
     const authToken = await auth();
 
     const response = await fetch(
-      `${
-        process.env.API_HOST
-      }/knowledge_bases/${id}/resources?resource_path=${encodeURIComponent(
-        body.resource_path
-      )}`,
+      `${process.env.API_HOST}/knowledge_bases/${id}/resources?resource_path=${body.resource_path}`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
