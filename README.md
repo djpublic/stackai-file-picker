@@ -1,12 +1,21 @@
 # Stack AI - Take-at-Home Task - Frontend Engineer (KB)
 
-- Live demo: [https://stackai.djalmaaraujo.com/](https://stackai.djalmaaraujo.com/)
-- Youtube Video: TBD
+<a href="https://stackai.djalmaaraujo.com"><img width="2048" height="1373" alt="image" src="https://github.com/user-attachments/assets/c89d777a-eeff-40ee-aa10-c294e29dad5a" /></a>
+
+Live demo: [https://stackai.djalmaaraujo.com/](https://stackai.djalmaaraujo.com/)
 
 ## Participant:
 
 - Djalma Araújo (@djalmaaraujo)
 - Email: djalma.araujo@gmail.com
+
+## Youtube Videos
+
+I endup recording three different videos if you want to jump to a specific part):
+
+- General explanation / Readme/Important topics: https://www.youtube.com/watch?v=gj9Ut_oK-TI
+- Live demo - Using the UI: https://www.youtube.com/watch?v=91bR9Zjv4i0
+- Code and Structure explanation (Excalidraw + Code): https://www.youtube.com/watch?v=NvJc970vSoo
 
 ## How to run the project
 
@@ -19,6 +28,8 @@ npm run dev
 
 Open http://localhost:3000 # You should be redirected to /688e4996-da83-45ee-8ed5-a8c8daaf0308
 ```
+
+As mentioned in the `.env.example`, you can grab the information to run the project in: [https://stack-ai.notion.site/Take-at-Home-Task-Frontend-Engineer-KB-020c24ea42eb40a4bf8f3ea6b54cc83d](https://stack-ai.notion.site/Take-at-Home-Task-Frontend-Engineer-KB-020c24ea42eb40a4bf8f3ea6b54cc83d).
 
 ## ⚒️ **Tech Stack** (Updated)
 
