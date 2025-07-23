@@ -1,5 +1,8 @@
 # Stack AI - Take-at-Home Task - Frontend Engineer (KB)
 
+- Live demo: [https://stackai.djalmaaraujo.com/](https://stackai.djalmaaraujo.com/)
+- Youtube Video: TBD
+
 ## Participant:
 
 - Djalma Araújo (@djalmaaraujo)
