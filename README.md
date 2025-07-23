@@ -78,6 +78,7 @@ I did not have time to implement the filters and sorting, but I added the search
 - Pagination: It's an improvement I could do;
 - Tests: I didn't have much time to write the challenge, but I could show some testing strategies or talk about during a System design interview, or a live coding;
 - Some inconsistency with some React Query invalidations: Because we always need two API's to sync the files indexed, I had some challenges to invalidate the queries;
+- The API authentication method: I did not implement a cookie-based authentication, so for the purpose of this code challenge, all requests are making a new authentication in the BACKEND;
 
 ### Usage of Hooks
 

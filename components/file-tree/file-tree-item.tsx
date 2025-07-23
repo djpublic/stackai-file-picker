@@ -13,13 +13,16 @@ export default function FileTreeItem({
   isOpen = false,
   toggleFolder,
   level = 0,
+  parentId,
 }: FileTreeItemProps) {
   const {
     selectedItems,
     toggleSelected,
+    selectAll,
     syncingItems,
     allSelectedDefault,
     hiddenItems,
+    calculateAllSelected,
   } = useFileTreeStore();
 
   const { name, type, status, id } = entry;
@@ -30,6 +33,71 @@ export default function FileTreeItem({
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
   const canDelete = type === "file" && indexed && !hidden && !syncing;
+
+  // Smart checkbox selection handler
+  const handleSmartSelection = (checkedState: boolean) => {
+    if (type === "directory") {
+      // If it's a directory (parent), select/unselect ALL descendants (not just direct children)
+      const getAllDescendants = (currentElement: Element): string[] => {
+        const descendants: string[] = [];
+        const currentLevel = parseInt(
+          currentElement.getAttribute("data-level") || "1"
+        );
+
+        // Start from the current element and look for subsequent elements at deeper levels
+        let nextSibling = currentElement.nextElementSibling;
+
+        while (nextSibling) {
+          const siblingLevel = parseInt(
+            nextSibling.getAttribute("data-level") || "1"
+          );
+          const siblingId = nextSibling.getAttribute("data-id");
+
+          // If we encounter an element at the same level or higher, we've reached the end of descendants
+          if (siblingLevel <= currentLevel) {
+            break;
+          }
+
+          // If it's a deeper level and has an ID, it's a descendant
+          if (siblingId) {
+            descendants.push(siblingId);
+          }
+
+          nextSibling = nextSibling.nextElementSibling;
+        }
+
+        return descendants;
+      };
+
+      // Find the current element in the DOM
+      const currentElement = document.querySelector(`[data-id="${id}"]`);
+      if (currentElement) {
+        const allDescendants = getAllDescendants(currentElement);
+        // Include the directory itself + all descendants
+        const allIds = [id, ...allDescendants];
+        selectAll(allIds, checkedState);
+      }
+    } else {
+      // If it's a file (child), handle individual selection
+      toggleSelected(id, checkedState);
+    }
+
+    // If unchecking any child (file OR folder), also uncheck the immediate parent folder
+    if (!checkedState && parentId) {
+      // Check if the parent is currently selected in the store
+      const isParentSelected = selectedItems.includes(parentId);
+      const isParentSelectedDefault = allSelectedDefault;
+      const parentIsChecked = isParentSelectedDefault || isParentSelected;
+
+      // If parent is checked, uncheck it
+      if (parentIsChecked) {
+        toggleSelected(parentId, false);
+      }
+    }
+
+    // Update the main checkbox state
+    setTimeout(() => calculateAllSelected(), 0);
+  };
 
   // Only on the first render to allow indexed files to be checked
   React.useEffect(() => {
@@ -50,12 +118,15 @@ export default function FileTreeItem({
       aria-label={`${name} - ${status}`}
       data-id={id}
       data-level={level}
+      data-parent-id={parentId}
     >
       <td className="w-10 p-3 text-center">
         <Checkbox
           disabled={syncing}
           checked={checked}
-          onCheckedChange={(checkedState) => toggleSelected(id, checkedState)}
+          onCheckedChange={(checkedState) =>
+            handleSmartSelection(!!checkedState)
+          }
         />
       </td>
 
@@ -63,10 +134,10 @@ export default function FileTreeItem({
         className="p-3 pl-0 min-w-0 cursor-pointer hover:bg-muted/30 transition-colors"
         onClick={() => {
           if (type === "directory") {
-            return toggleFolder();
+            return;
           }
 
-          toggleSelected(id, !selected);
+          handleSmartSelection(!selected);
         }}
       >
         <div

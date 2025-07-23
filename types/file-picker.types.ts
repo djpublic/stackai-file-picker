@@ -105,6 +105,7 @@ export interface FileTreeItemProps {
   isOpen: boolean;
   toggleFolder: () => void;
   level: number;
+  parentId?: string;
 }
 
 export type FileTreeEntryStatusProps =
@@ -142,6 +143,7 @@ export interface FileTreeRowProps {
   level?: number;
   resource: FileTreeResourceProps;
   type: ResourceType;
+  parentId?: string;
 }
 
 export interface FilePickerContainerProps {

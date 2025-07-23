@@ -17,6 +17,7 @@ export default function FileTreeRow({
   expanded = false,
   level = 0,
   resource,
+  parentId,
 }: FileTreeRowProps) {
   const { search } = useFileTreeStore();
   const { toggleExpandedPath, expandedPaths } = useFileTreeStore();
@@ -59,6 +60,7 @@ export default function FileTreeRow({
         entry={item}
         level={level + 1}
         resource={resource}
+        parentId={entry.id}
       />
     );
   });
@@ -79,6 +81,7 @@ export default function FileTreeRow({
         isOpen={isOpen}
         toggleFolder={toggleFolder}
         level={level}
+        parentId={parentId}
       />
 
       {loading && <FileTreeRowLoading />}

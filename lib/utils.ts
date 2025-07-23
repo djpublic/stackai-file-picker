@@ -94,3 +94,40 @@ export const enhanceItems = (
     return { ...item, status: syncItem?.status };
   });
 };
+
+/**
+ * Cleans up selected items by removing children when their parent is already selected
+ * This prevents API redundancy where both parent folder and children are sent
+ *
+ * @param selectedItems - Array of selected item paths
+ * @returns Cleaned array without redundant child paths
+ */
+export const cleanupSelectedItems = (selectedItems: string[]): string[] => {
+  if (selectedItems.length <= 1) {
+    return selectedItems;
+  }
+
+  // Sort paths by length (parents come before children)
+  const sortedPaths = [...selectedItems].sort((a, b) => a.length - b.length);
+  const cleanedPaths: string[] = [];
+
+  for (const currentPath of sortedPaths) {
+    // Check if any existing path in cleanedPaths is a parent of currentPath
+    const hasParentSelected = cleanedPaths.some((parentPath) => {
+      // A path is a parent if:
+      // 1. currentPath starts with parentPath
+      // 2. The character after parentPath is '/' or currentPath equals parentPath
+      return (
+        currentPath.startsWith(parentPath) &&
+        (currentPath === parentPath || currentPath[parentPath.length] === "/")
+      );
+    });
+
+    // Only add if no parent is already selected
+    if (!hasParentSelected) {
+      cleanedPaths.push(currentPath);
+    }
+  }
+
+  return cleanedPaths;
+};

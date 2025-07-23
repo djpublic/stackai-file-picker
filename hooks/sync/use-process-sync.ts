@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import { poolKbSyncPendingResources } from "../use-knowledge-base";
+import { cleanupSelectedItems } from "@/lib/utils";
 
 interface ProcessSyncParams {
   knowledgeBaseId: string;
@@ -42,17 +43,20 @@ export function useProcessSync() {
       // Send toast
       toast.info("Preparing sync…");
 
+      // Clean up selected items to remove redundant children when parent is selected
+      const cleanedSelectedItems = cleanupSelectedItems(selectedItems);
+
       // Do optimistic update for the indexing status
       setSyncingItems(selectedItems);
 
-      // PUT /knowledge-base/{id} with the resource ids
+      // PUT /knowledge-base/{id} with the resource ids (using cleaned items)
       const kbUpdateId = toast.loading(`Adding files to knowledge base…`);
 
       await putResourceIdsIntoKnowledgeBase.mutateAsync({
         id: knowledgeBaseId,
         data: {
           ...knowledgeBaseRawData,
-          connection_source_ids: selectedItems,
+          connection_source_ids: cleanedSelectedItems,
         },
       });
 
