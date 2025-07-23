@@ -2,6 +2,7 @@ import {
   FileTreeEntryProps,
   FileTreeResourceProps,
   ResourceType,
+  SelectedItemProps,
 } from "@/types/file-picker.types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -104,7 +105,7 @@ export const enhanceItems = (
  * @returns Cleaned array without redundant child paths
  */
 export const cleanupSelectedItems = (
-  selectedItems: { id: string; parentId: string | undefined }[]
+  selectedItems: SelectedItemProps[]
 ): string[] => {
   const cleanedIds: string[] = [];
 

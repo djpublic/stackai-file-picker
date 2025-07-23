@@ -146,12 +146,6 @@ export interface FileTreeRowProps {
   parentId?: string;
 }
 
-export interface FilePickerContainerProps {
-  open: boolean;
-  onClose: () => void;
-  onSelectFiles: (fileIds: string[]) => void;
-}
-
 export interface ConnectionResource {
   created_at: string;
   inode_id?: string;

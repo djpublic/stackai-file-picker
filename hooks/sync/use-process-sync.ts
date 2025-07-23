@@ -17,7 +17,7 @@ interface ProcessSyncParams {
   callSyncInKnowledgeBase: {
     mutateAsync: (params: { id: string; orgId: string }) => Promise<any>;
   };
-  setSyncingItems: (items: SelectedItemProps[]) => void;
+  setSyncingItems: (items: string[]) => void;
   queryClient: QueryClient;
 }
 
@@ -53,7 +53,7 @@ export function useProcessSync() {
       }
 
       // Do optimistic update for the indexing status
-      setSyncingItems(selectedItems);
+      setSyncingItems(cleanedSelectedItems);
 
       // PUT /knowledge-base/{id} with the resource ids (using cleaned items)
       const kbUpdateId = toast.loading(`Adding files to knowledge base…`);
