@@ -46,7 +46,7 @@ export default function FileTreeHeader({
           className="gap-2 cursor-pointer text-md"
         >
           <FileSymlink className="h-5 w-5" />
-          Update {selectedItems.length} resources
+          Replace with {selectedItems.length} selected files
         </Button>
       </div>
     </div>

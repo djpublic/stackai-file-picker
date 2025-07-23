@@ -84,27 +84,11 @@ export async function poolKbSyncPendingResources(
         queryFn: () => getConnectionResource(url),
       });
     } catch (error) {
-      console.log("error", error);
       notifier.error("Error fetching data. Please refresh the page.");
     }
   };
 
   const fetchData = async (resolve: any, reject: any) => {
-    const { data } = await getData(reject);
-
-    console.log("invalidate data", data);
-
-    const hasPendingResources = data.some((item: any) =>
-      ["indexing", "pending"].includes(item.status)
-    );
-
-    console.log("hasPendingResources", hasPendingResources);
-
-    if (!hasPendingResources) {
-      console.log("No more pending resources");
-      return resolve(true);
-    }
-
     notifier.info(
       `Waiting for resources to be indexed (${tries}/${maxTries})`,
       {
@@ -112,6 +96,16 @@ export async function poolKbSyncPendingResources(
         duration: 5000,
       }
     );
+
+    const { data } = await getData(reject);
+
+    const hasPendingResources = data.some((item: any) =>
+      ["indexing", "pending"].includes(item.status)
+    );
+
+    if (!hasPendingResources) {
+      return resolve(true);
+    }
 
     tries++;
 
