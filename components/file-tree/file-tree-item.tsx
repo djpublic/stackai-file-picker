@@ -115,7 +115,10 @@ export default function FileTreeItem({
       <td className="p-3 cursor-pointer hover:bg-muted/30 transition-colors text-right">
         {canDelete && (
           <div className="flex justify-end mr-4">
-            <FileTreeItemDelete entry={entry} />
+            <FileTreeItemDelete
+              entry={entry}
+              handleSelection={handleSelection}
+            />
           </div>
         )}
       </td>

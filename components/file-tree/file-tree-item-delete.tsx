@@ -17,24 +17,41 @@ import { useDeleteKnowledgeBaseResource } from "@/hooks/use-delete-knowledge-bas
 import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
 import { poolKbSyncPendingResources } from "@/hooks/use-knowledge-base";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
-export function FileTreeItemDelete({ entry }: { entry: FileTreeEntryProps }) {
+export function FileTreeItemDelete({
+  entry,
+  handleSelection,
+}: {
+  entry: FileTreeEntryProps;
+  handleSelection: (checked: boolean) => void;
+}) {
+  const [hidden, setHidden] = useState(false);
   const { knowledgeBase } = useKnowledgeBaseStore();
   const { mutateAsync, isPending } = useDeleteKnowledgeBaseResource();
   const queryClient = useQueryClient();
 
   const unsyncFile = async () => {
     try {
+      handleSelection(false);
+
       await mutateAsync({
         knowledgeBaseId: knowledgeBase.id,
         path: entry.path,
       });
 
+      setHidden(true);
       poolKbSyncPendingResources(queryClient);
-    } catch {
+    } catch (error) {
+      console.error("Failed to de-index file", error);
+      setHidden(false);
       toast.error("Failed to de-index file. Try again.");
     }
   };
+
+  if (hidden) {
+    return null;
+  }
 
   return (
     <AlertDialog>
