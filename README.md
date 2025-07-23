@@ -17,13 +17,25 @@ npm run dev
 Open http://localhost:3000 # You should be redirected to /688e4996-da83-45ee-8ed5-a8c8daaf0308
 ```
 
-## ⚒️ **Tech Stack**
+## ⚒️ **Tech Stack** (Updated)
 
 - **Framework**: React + Next.js (latest stable version)
 - **Data Fetching**: Tanstack Query + fetch
 - **State Management**: Zustand
 - **Styling**: Tailwind CSS (latest stable version)
 - **Components library**: [Shadcn](https://ui.shadcn.com/)
+- **Testing Framework**: Jest + React Testing Library (ADDED)
+
+## 📓 Evaluation Criteria (Checklist)
+
+- ✅ Reusing React components - Correct. You can find components/ui and other components
+- ✅ Use of **custom hooks** - Yes, listed below
+- ✅ Use of comments wherever necessary - Many parts of the code have useful comments
+- ✅ Proper typing of variables - Did extensive usage proper typing on components
+- ✅ React’s good practices - Correct useEffect, caching strategies are in place.
+- ✅ Proper use of `useEffect` - Yes
+- ✅ Minimizing unnecessary re-renders. - Correct.
+- ✅ Next.js good practices
 
 ##  UI/UX quality:
 
@@ -52,7 +64,7 @@ Open http://localhost:3000 # You should be redirected to /688e4996-da83-45ee-8ed
 
 ## Technical choices
 
-The video has a good explanation of most features and decisions.
+The video has a good explanation of most features and decisions, but in this file you can find ideas, explanations, hooks list, etc.
 
 ### File Picker vs. On-page component
 
@@ -69,7 +81,8 @@ I stick with the `688e4996-da83-45ee-8ed5-a8c8daaf0308` Knowledge base as the co
 I followed the suggested stack from the project, including Zustand.
 
 - Plus: I added JEST for tests
-- Plug: I added Github Actions in the CI
+- Plus: I added Github Actions in the CI
+- Plus: I generated a Postman collection from the Jupyter file, it was very using during development
 
 ### Bonus Features
 
@@ -78,9 +91,7 @@ I did not have time to implement the filters and sorting, but I added the search
 ### Known Issues
 
 - Checkboxes when selecting parent/children needs some improvements;
-- Pagination: It's an improvement I could do;
-- Tests: I didn't have much time to write the challenge, but I could show some testing strategies or talk about during a System design interview, or a live coding;
-- Some inconsistency with some React Query invalidations: Because we always need two API's to sync the files indexed, I had some challenges to invalidate the queries;
+- Some inconsistency with some React Query invalidations: Because I always need two API's to sync the files indexed, I had some challenges to invalidate the queries;
 - The API authentication method: I did not implement a cookie-based authentication, so for the purpose of this code challenge, all requests are making a new authentication in the BACKEND;
 
 ### Usage of Hooks
@@ -100,6 +111,10 @@ This project makes extensive use of custom React hooks to encapsulate logic for 
 - `useKnowledgeBaseStore`: Manages global state related to the current knowledge base, such as the selected knowledge base and its properties.
 - `useFileTreeStore`: Manages the state of the file tree, including selected files, expanded folders, syncing items, and search/filter state.
 - `useProcessSync` (in `hooks/sync/use-process-sync.ts`): Orchestrates the multi-step process of syncing files to the knowledge base, including updating resources and triggering the sync process.
+- `useSmartSelection`: Handles complex selection logic for files and folders, including parent/child relationships, bulk selection, and smart directory selection behavior.
+- `useCheckOnFirstRender`: Automatically checks items on first render based on their checked state or parent's checked state.
+- `usePutKnowledgeBase`: Mutation hook to update a knowledge base with new resource IDs.
+- `usePutKnowledgeBaseSync`: Mutation hook to trigger the sync process for a knowledge base.
 - `poolKbSyncPendingResources`: Utility hook/function to refresh or poll the state of pending resources being synced, ensuring the UI stays up-to-date.
 
 Overall, the use of hooks in this project leads to a clean, maintainable, and scalable codebase. Each hook is well-scoped and documented, making it easy for new developers to understand and extend the functionality.
@@ -145,7 +160,75 @@ The utility function `enhanceItems` then merges these two lists, marking which i
 
 ### UI Decisions
 
-TBD
+### The Checkbox handler (Smart selection)
+
+One of the most complex features in this project is the file tree selection system. Instead of using a pure state management approach, I implemented a **hybrid solution** that combines **Zustand store** with **DOM manipulation** to handle the hierarchical selection logic efficiently.
+
+#### **Hybrid Approach: Zustand + DOM Manipulation**
+
+**How it works:**
+
+- **Zustand Store** (`useFileTreeStore`): Manages the final list of `selectedItems` and provides core selection methods (`toggleSelected`, `selectAll`)
+- **DOM Manipulation** (`useSmartSelection`): Uses `document.querySelector` to traverse the DOM tree and find parent-child relationships via `data-id`, `data-parent-id`, and `data-level` attributes
+
+**Key Functions:**
+
+- `getDirectoryDescendants()`: Recursively finds all child elements in the DOM tree using CSS selectors
+- `getElementLevel()`: Reads the `data-level` attribute from DOM elements to determine hierarchy depth
+- `handleDirectorySelection()`: When a folder is selected, it automatically finds and selects all descendants via DOM traversal
+
+#### **Pros of this Approach:**
+
+1. **Performance**: Avoids massive re-renders that would occur if I tracked the entire tree structure in React state
+2. **Memory Efficiency**: No need to duplicate the tree structure in memory - the DOM already contains it
+3. **Simplicity**: Leverages the existing DOM structure instead of building complex nested state objects
+4. **Real-time**: Always works with the current DOM state, even as the tree expands/collapses dynamically
+
+#### **Cons of this Approach:**
+
+1. **Tight Coupling**: Logic is tightly coupled to the DOM structure and CSS selectors
+2. **Testing Complexity**: Harder to unit test since it requires a DOM environment
+3. **Fragility**: Could break if DOM structure or data attributes change
+4. **Less Predictable**: DOM queries can be less predictable than pure state management
+
+#### **Smart Selection Behaviors:**
+
+**1. Selecting All (Directory Selection):**
+
+```typescript
+// When a directory is checked, automatically select all descendants
+const descendants = getDirectoryDescendants(currentElement);
+const allIds = [id, ...descendants];
+selectAll(items, checkedState);
+```
+
+**2. Child Selection vs. Unchecking Parent:**
+
+- When a child is **unchecked**, it automatically unchecks its parent if the parent was previously checked
+- Uses DOM traversal to find the parent element and updates its state
+- Prevents inconsistent states where a parent appears selected but has unselected children
+
+**3. Parent with All Selected:**
+
+- When all children of a directory are individually selected, the parent automatically appears checked
+- This is handled through the `allSelectedDefault` state and visual feedback
+
+#### **Avoiding Backend Duplication with `cleanupSelectedItems`**
+
+A critical optimization in my sync process is the `cleanupSelectedItems` utility function:
+
+```typescript
+export const cleanupSelectedItems = (
+  selectedItems: { id: string; parentId: string | undefined }[]
+): string[] => {
+  // Remove child items when parent is also selected
+  // This avoids duplicate work on the backend
+};
+```
+
+**Why this matters:** Without this cleanup, selecting both a folder and its individual files would cause the backend to process the same files twice - once as part of the folder and once as individual resources. As mentioned in the requirements: _"While the backend will work fine and index everything under test_folder, there will be duplicate work to get the metadata of the Contrato_pagos_inmediatos.pdf file both as a child of test_folder and as an independent resource."_
+
+The cleanup function ensures I only send parent directories to the backend when both parent and children are selected, eliminating this redundant processing and improving sync performance.
 
 ### API Routes
 
@@ -198,8 +281,21 @@ This is how the sync process works:
 5. Trigger the sync process by calling GET /knowledge_bases/sync/trigger/{id}.
 6. Invalidate queries so the UI can refetch
 
+## Usage of AI
+
+The challenge don't mention if it's allowed to use AI or not. I think it's important to mention how it was used in this project.
+
+- To setup jest environment
+- To help me with some questions here and there
+- To understand some ideas I had in mind.
+- To write some boring parts of the README
+
+Overall, I avoided using AI to code, because the code quality is REALLY REALLY bad with new projects with proper project rules, etc, based on my past experiences. Code quality is good with AI when you have a well-defined project.
+
+You can ask me more about AI usage during an interview.
+
 ## Overall Comment
 
-I had some hard time to focus and do everything I wanted for this project. I do think I am a great fit for the Stack the team is working on, and I can show more of my work if you need extra meetings, system design meetings, etc.
+I had some hard time to focus and do everything I wanted for this project. I do think I am a great fit for the Stack AI team, and I can show more of my work if you need extra meetings, system design meetings, etc.
 
 The codebase is organized, and it's spread into smaller components, but like I said in the known-issues, there are room for improvement, as everything in life :).

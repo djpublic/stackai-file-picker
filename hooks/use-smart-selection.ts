@@ -63,13 +63,8 @@ export const useSmartSelection = ({
   entry,
   parentId,
 }: UseSmartSelectionProps) => {
-  const {
-    isSelected,
-    toggleSelected,
-    selectAll,
-    allSelectedDefault,
-    calculateAllSelected,
-  } = useFileTreeStore();
+  const { isSelected, toggleSelected, selectAll, allSelectedDefault } =
+    useFileTreeStore();
 
   const { id, type } = entry;
 
