@@ -2,8 +2,8 @@ import { SetStateAction } from "react";
 
 export interface FileTreeResourceProps {
   knowledgeBaseId: string;
-  orgId: string;
-  connectionId: string;
+  orgId?: string;
+  connectionId?: string;
 }
 
 export interface KnowledgeBaseDataProps {

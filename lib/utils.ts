@@ -80,7 +80,7 @@ export const formatDateTime = (date: string) => {
 export const enhanceItems = (
   type: ResourceType,
   kbFolderData: FileTreeEntryProps[] = [],
-  connectionFolderData?: FileTreeEntryProps[]
+  connectionFolderData: FileTreeEntryProps[] = []
 ): FileTreeEntryProps[] => {
   if (type === "knowledge-base") {
     return kbFolderData;
