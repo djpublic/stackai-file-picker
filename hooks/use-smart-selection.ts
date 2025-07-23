@@ -11,33 +11,26 @@ interface UseSmartSelectionProps {
  * Gets all descendant IDs for a directory element in the DOM
  */
 const getDirectoryDescendants = (currentElement: Element): string[] => {
-  const descendants: string[] = [];
-  const currentLevel = parseInt(
-    currentElement.getAttribute("data-level") || "1"
+  const currentId = currentElement.getAttribute("data-id");
+  if (!currentId) return [];
+
+  // Find all elements that have this element as their parent
+  const directChildren = document.querySelectorAll(
+    `[data-parent-id="${currentId}"]`
   );
+  const allDescendants: string[] = [];
 
-  let nextSibling = currentElement.nextElementSibling;
-
-  while (nextSibling) {
-    const siblingLevel = parseInt(
-      nextSibling.getAttribute("data-level") || "1"
-    );
-    const siblingId = nextSibling.getAttribute("data-id");
-
-    // Stop when we reach an element at the same level or higher
-    if (siblingLevel <= currentLevel) {
-      break;
+  // Get IDs of direct children and recursively get their descendants
+  directChildren.forEach((child) => {
+    const childId = child.getAttribute("data-id");
+    if (childId) {
+      allDescendants.push(childId);
+      // Recursively get descendants of this child
+      allDescendants.push(...getDirectoryDescendants(child));
     }
+  });
 
-    // Add descendant IDs
-    if (siblingId) {
-      descendants.push(siblingId);
-    }
-
-    nextSibling = nextSibling.nextElementSibling;
-  }
-
-  return descendants;
+  return allDescendants;
 };
 
 /**

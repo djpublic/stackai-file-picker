@@ -8,6 +8,7 @@ import { FileTreeItemProps } from "@/types/file-picker.types";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { FileTreeItemDelete } from "./file-tree-item-delete";
 import { useSmartSelection } from "@/hooks/use-smart-selection";
+import { useCheckOnFirstRender } from "@/hooks/use-check-on-first-render";
 
 export default function FileTreeItem({
   entry,
@@ -18,7 +19,6 @@ export default function FileTreeItem({
 }: FileTreeItemProps) {
   const {
     selectedItems,
-    toggleSelected,
     syncingItems,
     allSelectedDefault,
     hiddenItems,
@@ -33,23 +33,22 @@ export default function FileTreeItem({
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
   const canDelete = type === "file" && indexed && !hidden && !syncing;
-
-  // Add opacity to nested checkboxes when main selector is checked
-  const isNestedItem = level >= 2;
-  const shouldShowOpacity = allSelected && isNestedItem;
+  const rowRef = React.useRef<HTMLTableRowElement>(null);
 
   // Use the smart selection hook
   const { handleSelection } = useSmartSelection({ entry, parentId });
 
-  // Only on the first render to allow indexed files to be checked
-  React.useEffect(() => {
-    if (checked) {
-      toggleSelected(id, true);
-    }
-  }, [checked, id, toggleSelected]);
+  // Handle automatic checking on first render
+  useCheckOnFirstRender({
+    id,
+    checked,
+    parentId,
+    rowRef,
+  });
 
   return (
     <tr
+      ref={rowRef}
       className={cn(
         "border-b hover:bg-muted/70 transition-colors h-15",
         selected && "bg-muted/30"
@@ -67,7 +66,6 @@ export default function FileTreeItem({
           disabled={syncing}
           checked={checked}
           onCheckedChange={(checkedState) => handleSelection(!!checkedState)}
-          className={cn(shouldShowOpacity && "opacity-50")}
         />
       </td>
 
@@ -75,7 +73,7 @@ export default function FileTreeItem({
         className="p-3 pl-0 min-w-0 cursor-pointer hover:bg-muted/30 transition-colors"
         onClick={() => {
           if (type === "directory") {
-            return;
+            return toggleFolder();
           }
 
           handleSelection(!selected);
