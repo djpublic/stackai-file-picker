@@ -17,8 +17,7 @@ export default function FileTreeItem({
   level = 0,
   parentId,
 }: FileTreeItemProps) {
-  const { isSelected, syncingItems, allSelectedDefault, allSelected } =
-    useFileTreeStore();
+  const { isSelected, syncingItems, allSelectedDefault } = useFileTreeStore();
 
   const { name, type, status, id } = entry;
   const indexed = status === "indexed";
