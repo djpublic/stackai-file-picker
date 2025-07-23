@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import FileTreeRow from "@/components/file-tree-simple/file-tree-row";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,9 +17,11 @@ export default function FileTree({
   disabled = false,
 }: FileTreeProps) {
   const { allSelected, selectAll } = useFilePickerStore();
-
+  const tableRef = useRef<HTMLTableSectionElement>(null);
   const handleSelectAll = (newState: CheckedState) => {
-    const allItems = document.querySelectorAll("[data-id][data-level='1']");
+    const allItems = tableRef.current?.querySelectorAll(
+      "[data-id][data-level='1']"
+    );
     const ids = Array.from(allItems).map((item) =>
       item.getAttribute("data-id")
     );
@@ -46,7 +48,7 @@ export default function FileTree({
               <th className="p-3 text-right text-sm">Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody ref={tableRef}>
             {!resource.knowledgeBaseId ? (
               <FileTreeRowLoading />
             ) : (

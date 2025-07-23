@@ -28,9 +28,13 @@ function normalizeConnectionResource(
   });
 }
 
-export function useFetchResources(url: string, enabled: boolean = true) {
+export function useFetchResources(
+  url: string,
+  enabled: boolean = true,
+  queryKey: any = null
+) {
   return useQuery({
-    queryKey: ["connection-resources", url],
+    queryKey: queryKey ?? ["connection-resources", url],
     queryFn: () => getConnectionResource(url),
     refetchOnWindowFocus: process.env.NODE_ENV === "production",
     enabled,

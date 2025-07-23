@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { BadgeAlert, CloudCheck, CloudOff, RefreshCcwDot } from "lucide-react";
+import { BadgeAlert, CloudCheck, CloudOff, RefreshCw } from "lucide-react";
 
 function StatusIcon({
   status,
@@ -21,7 +21,7 @@ function StatusIcon({
   const isIndexing = status === "indexing" || status === "pending" || syncing;
 
   if (isIndexing) {
-    Icon = RefreshCcwDot;
+    Icon = RefreshCw;
     tooltip = "Indexing";
   } else if (status === "indexed" || indexed) {
     Icon = CloudCheck;

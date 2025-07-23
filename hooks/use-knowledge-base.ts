@@ -2,15 +2,16 @@
 
 import { getKnowledgeBase } from "@/services/getKnowledgeBase";
 import {
+  FileTreeResourceProps,
   KnowledgeBaseDataProps,
   KnowledgeBaseProps,
   KnowledgeBaseResponse,
 } from "@/types/file-picker.types";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { putKnowledgeBase } from "@/services/putKnowledgeBase";
-import { putKnowledgeBaseSync } from "@/services/putKnowledgeBaseSync";
+
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { ParamValue } from "next/dist/server/request/params";
+import { getConnectionResourceUrl } from "@/lib/utils";
+import { getConnectionResource } from "@/services/getConnectionResource";
 
 /**
  * Normalizes knowledge base data to extract only the required fields
@@ -51,4 +52,71 @@ export function useKnowledgeBase(
       normalized: normalizeKnowledgeBase(data),
     }),
   });
+}
+
+export async function poolKbSyncPendingResources(
+  knowledgeBaseId: string,
+  path: string = "/",
+  notifier: any = null
+) {
+  let tries = 1;
+  const maxTries = 10;
+  const delay = 2000;
+
+  const getData = async (reject: any) => {
+    if (tries > maxTries) {
+      reject(new Error("Max tries reached. Please refresh the page."));
+      return;
+    }
+
+    try {
+      const queryClient = new QueryClient();
+      const url = getConnectionResourceUrl(
+        {
+          knowledgeBaseId: knowledgeBaseId,
+        } as FileTreeResourceProps,
+        path,
+        "knowledge-base"
+      );
+
+      return await queryClient.fetchQuery({
+        queryKey: ["connection-resources", url],
+        queryFn: () => getConnectionResource(url),
+      });
+    } catch (error) {
+      console.log("error", error);
+      notifier.error("Error fetching data. Please refresh the page.");
+    }
+  };
+
+  const fetchData = async (resolve: any, reject: any) => {
+    const { data } = await getData(reject);
+
+    console.log("invalidate data", data);
+
+    const hasPendingResources = data.some((item: any) =>
+      ["indexing", "pending"].includes(item.status)
+    );
+
+    console.log("hasPendingResources", hasPendingResources);
+
+    if (!hasPendingResources) {
+      console.log("No more pending resources");
+      return resolve(true);
+    }
+
+    notifier.info(
+      `Waiting for resources to be indexed (${tries}/${maxTries})`,
+      {
+        description: "We will notify you when it's done.",
+        duration: 5000,
+      }
+    );
+
+    tries++;
+
+    setTimeout(() => fetchData(resolve, reject), delay);
+  };
+
+  return new Promise(fetchData);
 }

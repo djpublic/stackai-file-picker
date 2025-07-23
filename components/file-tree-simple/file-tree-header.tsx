@@ -1,10 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { FileSymlink, RefreshCw } from "lucide-react";
-import { usePutKnowledgeBaseSync } from "@/hooks/use-put-knowledge-base-sync";
-import { useKnowledgeBaseStore } from "@/store/use-knowledge-base-store";
+import { FileSymlink } from "lucide-react";
+
 import { useFilePickerStore } from "@/store/use-file-picker-store";
 import Image from "next/image";
 
@@ -15,29 +13,10 @@ interface FileTreeHeaderProps {
 }
 
 export default function FileTreeHeader({
-  onRefetch,
   onUpdate,
   isLoading,
 }: FileTreeHeaderProps) {
-  const { knowledgeBase, indexedItems } = useKnowledgeBaseStore();
   const selectedItems = useFilePickerStore((state) => state.selectedItems);
-  const syncKbHandler = usePutKnowledgeBaseSync();
-
-  const handleSync = async () => {
-    const indexId = toast.loading(`Re-indexing resources…`, {
-      description: "This may take a few seconds.",
-    });
-
-    await syncKbHandler.mutateAsync({
-      id: knowledgeBase?.id || "",
-      orgId: knowledgeBase?.orgId || "",
-    });
-
-    toast.dismiss(indexId);
-    toast.success("Sync completed!");
-
-    onRefetch();
-  };
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
@@ -60,23 +39,6 @@ export default function FileTreeHeader({
       </div>
 
       <div className="flex flex-row gap-2">
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={handleSync}
-          disabled={
-            syncKbHandler.isPending || !indexedItems.length || isLoading
-          }
-          className="flex items-center gap-2"
-        >
-          <RefreshCw
-            className={`h-4 w-4 ${
-              syncKbHandler.isPending ? "animate-spin" : ""
-            }`}
-          />
-          Sync
-        </Button>
-
         <Button
           onClick={onUpdate}
           size="lg"

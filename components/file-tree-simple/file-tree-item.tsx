@@ -23,6 +23,13 @@ export default function FileTreeItem({
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
 
+  // Only on the first render
+  React.useEffect(() => {
+    if (checked) {
+      toggleSelected(id, true);
+    }
+  }, []);
+
   return (
     <tr
       className={cn(
