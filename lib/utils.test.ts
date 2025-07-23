@@ -218,18 +218,17 @@ describe("Utils", () => {
   });
 
   describe("formatDateTime", () => {
-    it("should format ISO date string correctly", () => {
+    it("should format ISO date string correctly in UTC", () => {
       const isoDate = "2025-07-22T14:17:37.878313Z";
       const result = formatDateTime(isoDate);
-      // Test that it returns a properly formatted string
-      expect(result).toMatch(/July 22, 2025/);
-      expect(result).toMatch(/July 22, 2025 at 11:17:37 AM/);
+      // Test that it returns a properly formatted string in UTC timezone
+      expect(result).toBe("July 22, 2025 at 02:17:37 PM");
     });
 
-    it("should handle different date format", () => {
+    it("should handle different date format in UTC", () => {
       const isoDate = "2024-01-01T00:00:00.000Z";
       const result = formatDateTime(isoDate);
-      expect(result).toMatch(/December 31, 2023 at 09:00:00 PM/);
+      expect(result).toBe("January 1, 2024 at 12:00:00 AM");
     });
   });
 

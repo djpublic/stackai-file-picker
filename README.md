@@ -68,6 +68,9 @@ I stick with the `688e4996-da83-45ee-8ed5-a8c8daaf0308` Knowledge base as the co
 
 I followed the suggested stack from the project, including Zustand.
 
+- Plus: I added JEST for tests
+- Plug: I added Github Actions in the CI
+
 ### Bonus Features
 
 I did not have time to implement the filters and sorting, but I added the search. I found the search endpoints by using the Stack API production app. There's no search API in the Jupyter file.

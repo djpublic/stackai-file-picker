@@ -15,6 +15,10 @@ const config: Config = {
   moduleNameMapper: {
     "^@/components/(.*)$": "<rootDir>/components/$1",
   },
+  // Set timezone to UTC to ensure consistent date/time tests across environments
+  testEnvironmentOptions: {
+    timezone: "UTC",
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

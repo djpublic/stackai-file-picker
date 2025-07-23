@@ -64,7 +64,7 @@ export const rootEntry = {
   type: "directory",
 } as FileTreeEntryProps;
 
-// The date received is 2025-07-22T14:17:37.878313Z, we need to format it to 2025-07-22 14:17:37
+// The date received is 2025-07-22T14:17:37.878313Z, we need to format it consistently in UTC
 export const formatDateTime = (date: string) => {
   return new Date(date).toLocaleString("en-US", {
     year: "numeric",
@@ -73,6 +73,7 @@ export const formatDateTime = (date: string) => {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    timeZone: "UTC",
   });
 };
 
