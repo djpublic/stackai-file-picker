@@ -38,7 +38,6 @@ export function useFetchResources(
     queryFn: () => getConnectionResource(url),
     refetchOnWindowFocus: process.env.NODE_ENV === "production",
     enabled,
-    staleTime: 5000, // 5 seconds
     select: (data: ConnectionResourceListResponse) => ({
       rawData: data,
       normalized: normalizeConnectionResource(

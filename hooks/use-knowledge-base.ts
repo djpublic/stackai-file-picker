@@ -43,10 +43,6 @@ export function useKnowledgeBase(
     queryKey: ["kb", id.toString(), refetchKey],
     queryFn: () => getKnowledgeBase(id.toString()),
     enabled,
-    refetchOnMount: true,
-    refetchOnReconnect: true,
-    staleTime: 20000, // 20 seconds
-    refetchOnWindowFocus: true,
     select: (data: KnowledgeBaseDataProps): KnowledgeBaseResponse => ({
       rawData: data,
       normalized: normalizeKnowledgeBase(data),
