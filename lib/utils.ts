@@ -1,7 +1,6 @@
 import {
   FileTreeEntryProps,
   FileTreeResourceProps,
-  ResourceType,
   SelectedItemProps,
   SyncingItemProps,
 } from "@/types/file-picker.types";
@@ -58,13 +57,6 @@ export const removeDuplicatedById = (array: FileTreeEntryProps[]) => {
     (item, index, self) => self.findIndex((t) => t.id === item.id) === index
   );
 };
-
-export const rootEntry = {
-  id: "/",
-  name: "Root",
-  path: "/",
-  type: "directory",
-} as FileTreeEntryProps;
 
 // The date received is 2025-07-22T14:17:37.878313Z, we need to format it consistently in UTC
 export const formatDateTime = (date: string) => {

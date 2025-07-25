@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileTreeProps } from "@/types/file-picker.types";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
 import { useFetchAndStoreResources } from "@/hooks/use-fetch-and-store-resources";
-import { cn, rootEntry } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { FileTreeRowLoading } from "./loading/file-tree-row";
 import { CheckedState } from "@radix-ui/react-checkbox";
 

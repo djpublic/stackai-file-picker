@@ -4,16 +4,132 @@ import {
   sortFilesAndFolders,
   removeDuplicated,
   removeDuplicatedById,
-  rootEntry,
   formatDateTime,
   enhanceItems,
+  getItemStatus,
+  cleanupSelectedItems,
 } from "./utils";
 import {
   FileTreeEntryProps,
   FileTreeResourceProps,
+  SelectedItemProps,
+  SyncingItemProps,
 } from "@/types/file-picker.types";
 
 describe("Utils", () => {
+  describe("getItemStatus", () => {
+    const mockItem: FileTreeEntryProps = {
+      id: "1",
+      name: "test-file.txt",
+      type: "file",
+      path: "/test-file.txt",
+      status: "not_indexed",
+    };
+
+    const mockKbData: FileTreeEntryProps[] = [
+      {
+        id: "2",
+        name: "indexed-file.txt",
+        type: "file",
+        path: "/indexed-file.txt",
+        status: "indexed",
+      },
+    ];
+
+    it("should return syncing status when item is in syncingItems", () => {
+      const syncingItems: SyncingItemProps[] = [
+        { id: "1", status: "indexing" },
+      ];
+
+      const result = getItemStatus(mockItem, syncingItems, mockKbData);
+      expect(result).toBe("indexing");
+    });
+
+    it("should return KB status when item path matches KB data", () => {
+      const itemWithKbPath: FileTreeEntryProps = {
+        ...mockItem,
+        path: "/indexed-file.txt",
+      };
+
+      const result = getItemStatus(itemWithKbPath, [], mockKbData);
+      expect(result).toBe("indexed");
+    });
+
+    it("should return not_indexed when item is not found in syncing or KB data", () => {
+      const result = getItemStatus(mockItem, [], mockKbData);
+      expect(result).toBe("not_indexed");
+    });
+
+    it("should prioritize syncing status over KB status", () => {
+      const syncingItems: SyncingItemProps[] = [
+        { id: "2", status: "indexing" },
+      ];
+      const itemWithKbPath: FileTreeEntryProps = {
+        id: "2",
+        name: "indexed-file.txt",
+        type: "file",
+        path: "/indexed-file.txt",
+        status: "indexed",
+      };
+
+      const result = getItemStatus(itemWithKbPath, syncingItems, mockKbData);
+      expect(result).toBe("indexing");
+    });
+  });
+
+  describe("cleanupSelectedItems", () => {
+    it("should remove child items when parent is selected", () => {
+      const selectedItems: SelectedItemProps[] = [
+        { id: "parent-folder", parentId: undefined },
+        { id: "child-file", parentId: "parent-folder" },
+        { id: "another-file", parentId: undefined },
+      ];
+
+      const result = cleanupSelectedItems(selectedItems);
+      expect(result).toEqual(["parent-folder", "another-file"]);
+      expect(result).not.toContain("child-file");
+    });
+
+    it("should keep all items when no parent-child relationships exist", () => {
+      const selectedItems: SelectedItemProps[] = [
+        { id: "file1", parentId: undefined },
+        { id: "file2", parentId: undefined },
+        { id: "file3", parentId: "different-parent" },
+      ];
+
+      const result = cleanupSelectedItems(selectedItems);
+      expect(result).toEqual(["file1", "file2", "file3"]);
+    });
+
+    it("should handle nested parent-child relationships", () => {
+      const selectedItems: SelectedItemProps[] = [
+        { id: "root", parentId: undefined },
+        { id: "level1", parentId: "root" },
+        { id: "level2", parentId: "level1" },
+        { id: "independent", parentId: undefined },
+      ];
+
+      const result = cleanupSelectedItems(selectedItems);
+      expect(result).toEqual(["root", "independent"]);
+    });
+
+    it("should handle empty array", () => {
+      const result = cleanupSelectedItems([]);
+      expect(result).toEqual([]);
+    });
+
+    it("should handle items with same parentId", () => {
+      const selectedItems: SelectedItemProps[] = [
+        { id: "parent", parentId: undefined },
+        { id: "child1", parentId: "parent" },
+        { id: "child2", parentId: "parent" },
+      ];
+
+      const result = cleanupSelectedItems(selectedItems);
+      expect(result).toEqual(["parent"]);
+    });
+  });
+
   describe("bytesToHumanReadable", () => {
     it("should return '0 KB' for 0 bytes", () => {
       expect(bytesToHumanReadable(0)).toBe("0 KB");
@@ -205,15 +321,6 @@ describe("Utils", () => {
     it("should handle empty array", () => {
       const result = removeDuplicatedById([]);
       expect(result).toEqual([]);
-    });
-  });
-
-  describe("rootEntry", () => {
-    it("should have correct properties", () => {
-      expect(rootEntry.id).toBe("/");
-      expect(rootEntry.name).toBe("Root");
-      expect(rootEntry.path).toBe("/");
-      expect(rootEntry.type).toBe("directory");
     });
   });
 

@@ -1,10 +1,5 @@
-// components/file-tree/file-tree-row.tsx
-
-import { useCallback, useEffect } from "react";
-import {
-  FileTreeEntryProps,
-  FileTreeRowProps,
-} from "@/types/file-picker.types";
+import { useCallback } from "react";
+import { FileTreeRowProps } from "@/types/file-picker.types";
 import { FileTreeRowLoading } from "@/components/file-tree/loading/file-tree-row";
 import FileTreeItem from "@/components/file-tree/file-tree-item";
 import { useFetchAndStoreResources } from "@/hooks/use-fetch-and-store-resources";
