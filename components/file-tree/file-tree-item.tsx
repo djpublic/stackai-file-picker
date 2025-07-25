@@ -11,18 +11,20 @@ import { useSmartSelection } from "@/hooks/use-smart-selection";
 import { useCheckOnFirstRender } from "@/hooks/use-check-on-first-render";
 
 export default function FileTreeItem({
-  entry,
+  entry: rawEntry,
   isOpen = false,
   toggleFolder,
-  level = 0,
+  level = 1,
   parentId,
 }: FileTreeItemProps) {
-  const { isSelected, syncingItems, allSelectedDefault } = useFileTreeStore();
+  const { isSelected, allSelectedDefault, getItem } = useFileTreeStore();
+
+  const entry = getItem(rawEntry.id) || rawEntry;
 
   const { name, type, status, id } = entry;
   const indexed = status === "indexed";
   const selected = isSelected(id);
-  const syncing = syncingItems.includes(id) || status === "indexing";
+  const syncing = entry.status === "indexing";
   const Icon = getFileIcon(name, type, false);
   const checked = allSelectedDefault ? indexed : selected;
   const canDelete = type === "file" && indexed && !syncing;
@@ -104,9 +106,7 @@ export default function FileTreeItem({
           <span className="text-sm truncate min-w-0 flex-1 break-all line-clamp-1 sm:max-w-55 md:max-w-md lg:max-w-lg flex">
             {name}
             <div className="w-4 h-4 flex-shrink-0" />
-            {type === "file" && (
-              <StatusIcon status={status} indexed={indexed} syncing={syncing} />
-            )}
+            {type === "file" && <StatusIcon status={status} />}
           </span>
         </div>
       </td>

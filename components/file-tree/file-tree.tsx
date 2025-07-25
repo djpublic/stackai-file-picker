@@ -6,17 +6,29 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileTreeProps } from "@/types/file-picker.types";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
+import { useFetchAndStoreResources } from "@/hooks/use-fetch-and-store-resources";
 import { cn, rootEntry } from "@/lib/utils";
 import { FileTreeRowLoading } from "./loading/file-tree-row";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
 export default function FileTree({
   resource,
-  type,
   disabled = false,
 }: FileTreeProps) {
-  const { allSelected, selectAll } = useFileTreeStore();
+  const { allSelected, selectAll, getItems } = useFileTreeStore();
   const tableRef = useRef<HTMLTableSectionElement>(null);
+
+  // Use the centralized hook to fetch root level data
+  const { isLoading } = useFetchAndStoreResources({
+    path: "/", // root path
+    resource,
+    parentId: "/", // root parent ID
+    enabled: !!resource.knowledgeBaseId,
+  });
+
+  // Get root items from store
+  const rootItems = getItems("/");
+
   const handleSelectAll = (newState: CheckedState) => {
     const allItems = tableRef.current?.querySelectorAll("[data-id]");
 
@@ -51,14 +63,19 @@ export default function FileTree({
           <tbody ref={tableRef}>
             {!resource.knowledgeBaseId ? (
               <FileTreeRowLoading />
+            ) : isLoading ? (
+              <FileTreeRowLoading />
             ) : (
-              <FileTreeRow
-                type={type}
-                resource={resource}
-                isRoot
-                expanded={true}
-                entry={rootEntry}
-              />
+              rootItems.map((item) => (
+                <FileTreeRow
+                  key={item.id}
+                  entry={item}
+                  level={0}
+                  resource={resource}
+                  parentId="/"
+                  items={rootItems}
+                />
+              ))
             )}
           </tbody>
         </table>

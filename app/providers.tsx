@@ -14,8 +14,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             // Reduce background refetching for better performance
-            staleTime: 0, // 1 minute
-            gcTime: 0, // 10 minutes (previously cacheTime)
+            staleTime: 60000, // 1 minute
+            gcTime: 600000, // 10 minutes (previously cacheTime)
             retry: 1, // Only retry failed requests once
             refetchOnWindowFocus: true, // Refetch when user returns to tab
           },

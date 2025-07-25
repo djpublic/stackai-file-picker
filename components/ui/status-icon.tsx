@@ -6,22 +6,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { BadgeAlert, CloudCheck, CloudOff, RefreshCw } from "lucide-react";
+import { FileTreeEntryStatusProps } from "@/types/file-picker.types";
 
-function StatusIcon({
-  status,
-  indexed = false,
-  syncing = false,
-}: {
-  status: string;
-  indexed: boolean;
-  syncing: boolean;
-}) {
+function StatusIcon({ status }: { status: FileTreeEntryStatusProps | null }) {
   let Icon = null;
   let tooltip = null;
 
-  const isIndexing = status === "indexing" || status === "pending" || syncing;
+  const isIndexing = status === "indexing" || status === "pending";
 
-  const isIndexed = !isIndexing && (status === "indexed" || indexed);
+  const isIndexed = !isIndexing && status === "indexed";
 
   const isError =
     (!isIndexed && !isIndexing && status === "error") ||

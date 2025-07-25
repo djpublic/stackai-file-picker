@@ -30,11 +30,6 @@ export const useCheckOnFirstRender = ({
       `button[data-state="checked"]`
     );
 
-    // Already checked, avoid double toggleSelected
-    if (itemChecked) {
-      return;
-    }
-
     let parentChecked = false;
 
     const parent = rowRef?.current?.parentElement?.querySelector(

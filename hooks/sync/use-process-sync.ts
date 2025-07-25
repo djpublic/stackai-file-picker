@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import { poolKbSyncPendingResources } from "../use-knowledge-base";
 import { cleanupSelectedItems } from "@/lib/utils";
-import { SelectedItemProps } from "@/types/file-picker.types";
+import { SelectedItemProps, SyncingItemProps } from "@/types/file-picker.types";
 
 interface ProcessSyncParams {
   knowledgeBaseId: string;
@@ -17,7 +17,7 @@ interface ProcessSyncParams {
   callSyncInKnowledgeBase: {
     mutateAsync: (params: { id: string; orgId: string }) => Promise<any>;
   };
-  setSyncingItems: (items: string[]) => void;
+  setSyncingItems: (items: SyncingItemProps[]) => void;
   queryClient: QueryClient;
 }
 
@@ -53,7 +53,12 @@ export function useProcessSync() {
       }
 
       // Do optimistic update for the indexing status
-      setSyncingItems(cleanedSelectedItems);
+      setSyncingItems(
+        cleanedSelectedItems.map((id) => ({
+          id,
+          status: "indexing",
+        }))
+      );
 
       // PUT /knowledge-base/{id} with the resource ids (using cleaned items)
       const kbUpdateId = toast.loading(`Adding files to knowledge base…`);

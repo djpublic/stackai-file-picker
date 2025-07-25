@@ -18,10 +18,6 @@ export default function FileTreeContainer({ loading }: FileTreeContainerProps) {
   };
 
   return (
-    <FileTree
-      disabled={loading}
-      resource={resource}
-      type="connection-resource"
-    />
+    <FileTree disabled={loading} resource={resource} type="knowledge-base" />
   );
 }

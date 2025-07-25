@@ -139,11 +139,10 @@ export interface FileItemProps {
 export interface FileTreeRowProps {
   entry: FileTreeEntryProps;
   isRoot?: boolean;
-  expanded?: boolean;
   level?: number;
   resource: FileTreeResourceProps;
-  type: ResourceType;
   parentId?: string;
+  items?: FileTreeEntryProps[];
 }
 
 export interface ConnectionResource {
@@ -175,4 +174,16 @@ export interface DeleteKnowledgeBaseResourceProps {
 export interface SelectedItemProps {
   id: string;
   parentId: string | undefined;
+}
+
+export interface SyncingItemProps {
+  id: string;
+  status: FileTreeEntryStatusProps;
+}
+
+export interface UseFetchAndStoreResourcesProps {
+  path: string;
+  resource: FileTreeResourceProps;
+  parentId: string;
+  enabled?: boolean;
 }

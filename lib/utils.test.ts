@@ -267,38 +267,45 @@ describe("Utils", () => {
       },
     ];
 
-    it("should return knowledge base data for knowledge-base type", () => {
-      const result = enhanceItems(
-        "knowledge-base",
+    it("should enhance connection data with status", () => {
+      const result = enhanceItems({
         kbFolderData,
-        connectionFolderData
-      );
-      expect(result).toEqual(kbFolderData);
-    });
-
-    it("should enhance connection data with status for connection type", () => {
-      const result = enhanceItems(
-        "connection-resource",
-        kbFolderData,
-        connectionFolderData
-      );
+        connectionFolderData,
+        syncingItems: [],
+      });
       expect(result).toHaveLength(2);
       expect(result[0].status).toBe("indexed");
-      expect(result[1].status).toBeUndefined();
+      expect(result[1].status).toBe("not_indexed");
+    });
+
+    it("should handle syncing items status", () => {
+      const syncingItems = [{ id: "1", status: "indexing" as const }];
+      const result = enhanceItems({
+        kbFolderData,
+        connectionFolderData,
+        syncingItems,
+      });
+      expect(result).toHaveLength(2);
+      expect(result[0].status).toBe("indexing");
+      expect(result[1].status).toBe("not_indexed");
     });
 
     it("should handle undefined connection data", () => {
-      const result = enhanceItems(
-        "connection-resource",
+      const result = enhanceItems({
         kbFolderData,
-        undefined
-      );
+        connectionFolderData: [],
+        syncingItems: [],
+      });
 
       expect(result).toEqual([]);
     });
 
     it("should handle empty arrays", () => {
-      const result = enhanceItems("connection-resource", [], []);
+      const result = enhanceItems({
+        kbFolderData: [],
+        connectionFolderData: [],
+        syncingItems: [],
+      });
       expect(result).toEqual([]);
     });
   });

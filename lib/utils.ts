@@ -3,6 +3,7 @@ import {
   FileTreeResourceProps,
   ResourceType,
   SelectedItemProps,
+  SyncingItemProps,
 } from "@/types/file-picker.types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -78,22 +79,40 @@ export const formatDateTime = (date: string) => {
   });
 };
 
-// This method combines the knowledge base folder information for indexing and the connection folder
-export const enhanceItems = (
-  type: ResourceType,
-  kbFolderData: FileTreeEntryProps[] = [],
-  connectionFolderData: FileTreeEntryProps[] = []
-): FileTreeEntryProps[] => {
-  if (type === "knowledge-base") {
-    return kbFolderData;
+export const getItemStatus = (
+  item: FileTreeEntryProps,
+  syncingItems: SyncingItemProps[],
+  kbFolderData: FileTreeEntryProps[]
+) => {
+  const syncingItem = syncingItems.find(
+    (syncingItem) => syncingItem.id === item.id
+  );
+
+  if (syncingItem) return syncingItem.status;
+
+  const kbFolderItem = kbFolderData.find((kbItem) => kbItem.path === item.path);
+
+  if (kbFolderItem) {
+    return kbFolderItem.status;
   }
 
-  return connectionFolderData?.map((item) => {
-    const syncItem = kbFolderData.find(
-      (syncItem) => syncItem.path === item.path
-    );
+  return "not_indexed";
+};
 
-    return { ...item, status: syncItem?.status };
+// This method combines the knowledge base folder information for indexing and the connection folder
+export const enhanceItems = ({
+  kbFolderData,
+  connectionFolderData,
+  syncingItems,
+}: {
+  kbFolderData: FileTreeEntryProps[];
+  connectionFolderData: FileTreeEntryProps[];
+  syncingItems: SyncingItemProps[];
+}): FileTreeEntryProps[] => {
+  return connectionFolderData?.map((item) => {
+    const status = getItemStatus(item, syncingItems, kbFolderData);
+
+    return { ...item, status };
   });
 };
 

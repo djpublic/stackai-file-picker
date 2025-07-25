@@ -1,75 +1,73 @@
-import { useCallback } from "react";
-import { FileTreeRowProps } from "@/types/file-picker.types";
+// components/file-tree/file-tree-row.tsx
+
+import { useCallback, useEffect } from "react";
+import {
+  FileTreeEntryProps,
+  FileTreeRowProps,
+} from "@/types/file-picker.types";
 import { FileTreeRowLoading } from "@/components/file-tree/loading/file-tree-row";
 import FileTreeItem from "@/components/file-tree/file-tree-item";
-import { useFetchResources } from "@/hooks/use-fetch-resource";
-import {
-  enhanceItems,
-  getConnectionResourceUrl,
-  sortFilesAndFolders,
-} from "@/lib/utils";
+import { useFetchAndStoreResources } from "@/hooks/use-fetch-and-store-resources";
 import { useFileTreeStore } from "@/store/use-file-tree-store";
 
 export default function FileTreeRow({
-  type,
   entry,
   isRoot = false,
-  expanded = false,
   level = 0,
   resource,
   parentId,
+  items = [],
 }: FileTreeRowProps) {
-  const { search } = useFileTreeStore();
-  const { toggleExpandedPath, expandedPaths } = useFileTreeStore();
-  const isOpen = expandedPaths.includes(entry.path) || expanded;
+  const { toggleExpandedPath, expandedPaths, getItems } = useFileTreeStore();
 
-  // Sync status in Knowledge Base
-  const kbUrl = getConnectionResourceUrl(
+  // Use expandedPaths as the single source of truth
+  const isOpen = expandedPaths.includes(entry.id);
+
+  // Use the centralized hook to fetch children when directory is open
+  const { isLoading } = useFetchAndStoreResources({
+    path: entry.path,
     resource,
-    entry.path,
-    "knowledge-base"
-  );
-  const { data: kbFolderData, isLoading: isKbLoading } = useFetchResources(
-    kbUrl,
-    isOpen
-  );
+    parentId: entry.id,
+    enabled: isOpen && entry.type === "directory",
+  });
 
-  const { data: folderData, isLoading } = useFetchResources(
-    getConnectionResourceUrl(resource, entry.id, "connection-resource", search),
-    isOpen
-  );
+  // Get children from store
+  const childItems = getItems(entry.id);
 
   const toggleFolder = useCallback(() => {
-    toggleExpandedPath(entry.path, !isOpen);
-  }, [entry.path, isOpen, toggleExpandedPath]);
+    toggleExpandedPath(entry.id, !isOpen);
+  }, [entry.id, isOpen, toggleExpandedPath]);
 
-  const loading = isLoading || isKbLoading;
-
-  const items =
-    isOpen && !loading
-      ? sortFilesAndFolders(
-          enhanceItems(type, kbFolderData?.normalized, folderData?.normalized)
-        )
-      : [];
-
-  const renderChildren = items.map((item) => {
-    return (
-      <FileTreeRow
-        type={type}
-        key={item.id}
-        entry={item}
-        level={level + 1}
-        resource={resource}
-        parentId={entry.id}
-      />
-    );
-  });
+  // Render children recursively
+  const renderChildren = isOpen
+    ? childItems.map((item) => {
+        return (
+          <FileTreeRow
+            key={item.id}
+            entry={item}
+            level={level + 1}
+            resource={resource}
+            parentId={entry.id}
+            items={childItems}
+          />
+        );
+      })
+    : [];
 
   if (isRoot) {
     return (
       <>
-        {loading && <FileTreeRowLoading />}
-        {renderChildren}
+        {isLoading && <FileTreeRowLoading />}
+        {items.map((item) => (
+          <FileTreeRow
+            key={item.id}
+            entry={item}
+            level={0}
+            resource={resource}
+            parentId="/"
+            items={items}
+          />
+        ))}
       </>
     );
   }
@@ -84,7 +82,7 @@ export default function FileTreeRow({
         parentId={parentId}
       />
 
-      {loading && <FileTreeRowLoading />}
+      {isLoading && <FileTreeRowLoading />}
       {renderChildren}
     </>
   );
