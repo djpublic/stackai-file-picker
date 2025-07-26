@@ -23,7 +23,7 @@ I endup recording three different videos if you want to jump to a specific part)
 ## How to run the project
 
 ```
-git clone git@github.com:djalmaaraujo/stackai-file-picker.git
+git clone https://github.com/djpublic/stackai-file-picker.git
 cd stackai-file-picker
 npm install
 cp .env.example .env # Replace with real values
