@@ -11,16 +11,13 @@ import { useSmartSelection } from "@/hooks/use-smart-selection";
 import { useCheckOnFirstRender } from "@/hooks/use-check-on-first-render";
 
 export default function FileTreeItem({
-  entry: rawEntry,
+  entry,
   isOpen = false,
   toggleFolder,
   level = 1,
   parentId,
 }: FileTreeItemProps) {
-  const { isSelected, allSelectedDefault, getItem } = useFileTreeStore();
-
-  const entry = getItem(rawEntry.id) || rawEntry;
-
+  const { isSelected, allSelectedDefault } = useFileTreeStore();
   const { name, type, status, id } = entry;
   const indexed = status === "indexed";
   const selected = isSelected(id);
