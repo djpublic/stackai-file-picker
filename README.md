@@ -1,6 +1,9 @@
 # Stack AI - Take-at-Home Task - Frontend Engineer (KB)
 
-<a href="https://stackai.djalmaaraujo.com"><img width="2048" height="1373" alt="image" src="https://github.com/user-attachments/assets/c89d777a-eeff-40ee-aa10-c294e29dad5a" /></a>
+<a href="https://stackai.djalmaaraujo.com"><img width="4096" height="2746" alt="image" src="https://github.com/user-attachments/assets/75ba3c76-b005-4877-8957-776d5b2b46c6" /></a>
+
+
+
 
 Live demo: [https://stackai.djalmaaraujo.com/](https://stackai.djalmaaraujo.com/)
 
